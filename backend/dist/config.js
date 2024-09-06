@@ -28,5 +28,6 @@ const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 exports.config = {
     DATABASE_URL: process.env.DATABASE_URL || "",
-    JWT_SECRET: process.env.JWT_SECRET || ""
+    JWT_SECRET: process.env.JWT_SECRET || "",
+    UPLOADS_DIR: process.env.UPLOADS_DIR || ""
 };

@@ -14,7 +14,7 @@ app.use(cors());
 app.use('/api/v1/user',userRouter)
 app.use('/api/v1/ads',adsRouter);
 app.use("/api/v1/like",likeRouter);
-app.use("/api/v1/delete",deleteRouter);
+app.use("/api/v1/unlike",deleteRouter);
 
 app.listen(port,()=>{
     console.log("Server is listening on port: ", port);

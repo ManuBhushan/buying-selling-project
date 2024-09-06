@@ -16,7 +16,7 @@ app.use((0, cors_1.default)());
 app.use('/api/v1/user', userRouter_1.default);
 app.use('/api/v1/ads', adsRouter_1.default);
 app.use("/api/v1/like", likeRouter_1.default);
-app.use("/api/v1/delete", deleteRouter_1.default);
+app.use("/api/v1/unlike", deleteRouter_1.default);
 app.listen(port, () => {
     console.log("Server is listening on port: ", port);
 });
