@@ -11,7 +11,7 @@ function App() {
   return (
     <>
      <BrowserRouter>
-      <Routes >
+      <Routes>
         
         <Route path='/' element={<Layout/>}> 
         {/* // just show header and all its children */}
