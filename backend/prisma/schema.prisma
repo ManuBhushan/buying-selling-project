@@ -28,7 +28,7 @@ model Ads{
 
   id          Int @id @default(autoincrement())
   category    String @default("others")
-  price       String
+  price       Float      // updated from string to float
   sold        Boolean @default(false)
   title       String?
   description String?
@@ -50,3 +50,40 @@ model Like{
   @@unique([userId,adId])  // combination of this should be unique in the db
   
 }
+
+
+// adsRouter.get("/bulk", async (req, res) => {
+//     try {
+//         // Fetch all ads that are not sold
+//         const allads = await prisma.ads.findMany({
+//             where: {
+//                 sold: false
+//             },
+//             // Initially, fetch without any specific sorting
+//         });
+
+//         // Parse the sorting query parameter (e.g., sortBy=price-asc or sortBy=newest)
+//         const { sortBy } = req.query;
+
+//         // Perform sorting based on query parameter
+//         if (sortBy === 'newest') {
+//             // Sort by newest first (createdAt descending)
+//             allads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+//         } else if (sortBy === 'price-asc') {
+//             // Sort by price ascending
+//             allads.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+//         } else if (sortBy === 'price-desc') {
+//             // Sort by price descending
+//             allads.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+//         }
+
+//         if (allads.length === 0) {
+//             return res.send("No active ads right now");
+//         }
+
+//         return res.send(allads);
+//     } catch (error) {
+//         console.error(error); // Log the error for debugging
+//         return res.status(500).send("Error while fetching ads");
+//     }
+// });

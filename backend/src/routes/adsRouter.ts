@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 import * as path from 'path';
 import multer from "multer";
 import { config } from '../config';
-
+import * as fs from "fs"
 
 const adsRouter=express();
 
@@ -31,6 +31,60 @@ interface CustomRequest extends Request {
     })
 
 const upload = multer({ storage: storage });
+
+
+
+
+adsRouter.get("/bulk",async (req,res)=>{
+    try{
+        const allads=await prisma.ads.findMany({
+            where:{
+                sold:false
+            }
+        }) 
+        return res.send(allads); // check in front end it response.size ==0 then print  --> No active ads right now 
+    }
+    catch(error){
+        return res.status(411).send("Error while fetching ads");
+        // what if their are no adds availabe on the website 
+        
+    }
+})  
+
+adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
+    try{
+        // req.query.sort can be { string,string[] }
+        const category= typeof req.query.category === 'string' ? req.query.category : 'others';
+        console.log(category);
+        if(category==="others"){
+            const ads= await prisma.ads.findMany({
+                where:{
+                    sold:false,
+                }
+               })
+               console.log(ads);
+        
+               return res.send(ads);
+        }
+        else{
+            const ads= await prisma.ads.findMany({
+                where:{
+                    sold:false,
+                    category:category
+                }
+               })
+               console.log(ads);
+        
+               return res.send(ads);
+        
+        }
+      
+
+    }
+    catch(error){
+        return res.status(411).send("Error while fetching ads by category");
+    }
+})
 
 adsRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
     try{
@@ -59,10 +113,10 @@ adsRouter.post("/createAd",upload.single('file'), async (req:CustomRequest,res:R
     try {
         const userid=req.userId?.id;
         const { price, title, description, category,imageLink, } = req.body;
-
+        console.log(typeof price);
         const data = {
             userId:userid,
-            price: price,
+            price: Number(price),
             imageLink:req.file?.path,
             ...(title && { title: title }),
             ...(description && { description: description }),
@@ -97,69 +151,54 @@ adsRouter.get('/myads',async (req:CustomRequest,res:Response)=>{
     }
 });
 
-adsRouter.delete("/delete/:id",async(req:CustomRequest,res:Response)=>{
-    try {
+adsRouter.delete("/delete/:id", async (req: CustomRequest, res: Response) => {
+    const userId = req.userId?.id;
+    const id = parseInt(req.params.id);
 
-        // if u want to delete an ad delete it from like also if it is present their 
-        const userId=req.userId?.id;
-        const id=req.params.id;
-        const ad=await prisma.ads.delete( {
-                where:{
-                    id:Number(id),
-                    userId:userId
+    try {
+        const result = await prisma.$transaction(async (prisma) => {
+            // Delete likes associated with the ad
+            console.log("x");
+            await prisma.like.deleteMany({
+                where: {
+                    adId: id,   // delete all liked ad of this id 
+                },  
+            });
+            console.log("x");
+
+
+            // Delete the ad
+            const deletedAd = await prisma.ads.delete({
+                where: {
+                    id: id,
+                    userId: userId,
+                },
+                include: { // populate
+                    user: true,
+                },
+            });
+            const imageLink=deletedAd.imageLink;
+            fs.unlink(path.join(imageLink), (err) => {
+                if (err) {
+                    console.error('Error deleting file:', err);
+                    return res.status(500).send('Error deleting file');
                 }
-                ,include:{
-                    user:true,
-                }
-            })
-                console.log(ad);
-            return res.send("Ad deleted");
+                
+                res.send('Blog and image deleted');
+            });
+                
+
+            return deletedAd;
+        });
+
+        console.log(result);
+        return res.send("Ad and associated likes deleted");
     } catch (error) {
         console.log(error);
-        return res.status(411).send("Error while deleting ad")
+        return res.status(411).send("Error while deleting ad and likes");
     }
-})
+});
+
+
 
 export default adsRouter;
-
-
-
-// adsRouter.delete("/delete/:id", async (req: CustomRequest, res: Response) => {
-//     const userId = req.userId?.id;
-//     const id = parseInt(req.params.id, 10);
-
-//     if (!userId) {
-//         return res.status(401).send("Unauthorized");
-//     }
-
-//     try {
-//         const result = await prisma.$transaction(async (prisma) => {
-//             // Delete likes associated with the ad
-//             await prisma.likes.deleteMany({
-//                 where: {
-//                     adId: id,
-//                 },
-//             });
-
-//             // Delete the ad
-//             const deletedAd = await prisma.ads.delete({
-//                 where: {
-//                     id: id,
-//                     userId: userId,
-//                 },
-//                 include: {
-//                     user: true,
-//                 },
-//             });
-
-//             return deletedAd;
-//         });
-
-//         console.log(result);
-//         return res.send("Ad and associated likes deleted");
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(411).send("Error while deleting ad and likes");
-//     }
-// });
-
