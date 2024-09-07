@@ -1,10 +1,31 @@
-import { Link } from "react-router-dom";
+import axios, { AxiosError } from "axios";
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { DATABASE_URL } from "../config";
 
 
 
 export const AuthSignup = () => {
- 
+  const navigate=useNavigate();
+  const [email,setEmail]=useState("");
+  const [name,setName]=useState("");
+  const [password,setPassword]=useState("");
 
+  const handleSubmit=async(e:FormEvent)=>{
+    e.preventDefault();
+    try{
+      const res=await axios.post(`${DATABASE_URL}/api/v1/user/signup`,{
+        name,email,password
+      })
+      localStorage.setItem("token",res.data);
+      navigate('/');
+
+    }
+    catch(error){
+      if(error instanceof AxiosError){
+        console.log(error.response?.data)}
+    }
+  }
   
     // Further logic to send request or handle data can go here like call to backend
 
@@ -20,7 +41,7 @@ export const AuthSignup = () => {
       </div>
 
       <form className="w-full max-w-md mt-6" 
-    //   onSubmit={handleSubmit}
+      onSubmit={handleSubmit}
       >
         <div>
           <label className="block mb-2 text-md text-black font-semibold">
@@ -30,8 +51,8 @@ export const AuthSignup = () => {
             type="text"
             name="name"
             placeholder="Name"
-            // value={postInputs.name}
-            // onChange={handleChange}
+            value={name}
+            onChange={(e)=>setName(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           />
         </div>
@@ -43,8 +64,8 @@ export const AuthSignup = () => {
             type="text"
             name="email"
             placeholder="Email"
-            // value={postInputs.username}
-            // onChange={handleChange}
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           />
         </div>
@@ -56,8 +77,8 @@ export const AuthSignup = () => {
             type="password"
             name="password"
             placeholder="Password"
-            // value={postInputs.password}
-            // onChange={handleChange}
+            value={password}
+            onChange={(e)=>setPassword(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           />
         </div>

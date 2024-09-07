@@ -1,9 +1,34 @@
+import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { DATABASE_URL } from "../config";
+import { FormEvent, useState } from "react";
 
 export const  AuthSignin = () => {
+  const navigate=useNavigate();
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
 
 
+  const handleSubmit=async (e:FormEvent)=>{
+    
+    e.preventDefault();
+    try {
+      const res=await axios.post(`${DATABASE_URL}/api/v1/user/signin`,{
+        email:email,
+        password
+      }
+    )
+    localStorage.setItem("token",res.data);
 
+    navigate('/');
+    } catch (error ) {
+        if(error instanceof AxiosError)
+        console.log(error.response?.data);
+
+    }
+    
+
+  }
   return (
     <div className="h-screen flex flex-col justify-center items-center">
       <div className="max-w-2xl text-4xl font-extrabold">Sign In</div>
@@ -16,7 +41,7 @@ export const  AuthSignin = () => {
       </div>
 
       <form className="w-full max-w-md mt-6" 
-    //   onSubmit={handleSubmit}
+      onSubmit={handleSubmit}
       >
         <div>
           <label className="block mb-2 text-md text-black font-semibold">
@@ -26,8 +51,8 @@ export const  AuthSignin = () => {
             type="text"
             name="email"
             placeholder="Email"
-            // value={postInputs.username}
-            // onChange={handleChange}
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           />
         </div>
@@ -39,8 +64,8 @@ export const  AuthSignin = () => {
             type="password"
             name="password"
             placeholder="Password"
-            // value={postInputs.password}
-            // onChange={handleChange}
+            value={password}
+            onChange={(e)=>setPassword(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           />
         </div>

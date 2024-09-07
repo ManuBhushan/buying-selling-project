@@ -16,8 +16,8 @@ interface CustomRequest extends Request {
 
   deleteRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
     try{
-    
-    const header=req.header("Authorization") || "";
+
+        const header=req.header("Authorization") || "";
 
         const user=jwt.verify(header,config.JWT_SECRET) as { id: number };
         if(!user){
@@ -31,6 +31,7 @@ interface CustomRequest extends Request {
             console.log(id);
             next();
             }
+            
     }
     catch(e){
         return res.status(411).send("Wrong user");
@@ -41,9 +42,8 @@ interface CustomRequest extends Request {
 
 deleteRouter.post("/:id",async (req:CustomRequest,res:Response)=>{
     try {
-        const likeId=req.params.id;
-        console.log(likeId);
-        
+
+        const likeId=req.params.id;        
         const ad=await prisma.like.delete({
             where:{
               id:Number(likeId)
@@ -51,9 +51,10 @@ deleteRouter.post("/:id",async (req:CustomRequest,res:Response)=>{
         })
         return res.send(ad);
     } catch (error) {
-        console.log(error);
         return res.status(411).send("Error while liking ad");
     }
 })
+
+
 
 export default deleteRouter
