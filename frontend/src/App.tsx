@@ -6,6 +6,7 @@ import { Signup } from './pages/Signup'
 import { Profile } from './pages/Profile'
 import { MyAds } from './pages/MyAds'
 import { AddItem } from './pages/AddItem'
+import SearchAds from './pages/SearchAds'
 function App() {
 
   return (
@@ -19,7 +20,7 @@ function App() {
           {/* // to show in homepage  */}
           <Route path='/signin' element={<Signin/>}/>
           <Route path='/signup' element={<Signup/>}/>
-
+          <Route path='/search' element={<SearchAds/>}/>
           {/* protected route only when login*/}
           <Route path='/profile' element={<Profile/>}/>
           <Route path='/myads/' element={<MyAds/>}/>  

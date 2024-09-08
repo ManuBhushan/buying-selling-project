@@ -19,10 +19,7 @@ export const AllAds = () => {
       const [allads,setAllAds]=useState<Ads[]>();
       useEffect(()=>{
             axios.get(`${DATABASE_URL}/api/v1/ads/bulk`).then(res=>{
-                console.log(res);
-                console.log(res.data);
                 setAllAds(res.data);
-
             }).catch(error=>{
                 console.log(error);
             })
