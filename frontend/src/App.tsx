@@ -7,6 +7,7 @@ import { Profile } from './pages/Profile'
 import { MyAds } from './pages/MyAds'
 import { AddItem } from './pages/AddItem'
 import SearchAds from './pages/SearchAds'
+import { Ad } from './pages/Ad'
 function App() {
 
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path='/profile' element={<Profile/>}/>
           <Route path='/myads/' element={<MyAds/>}/>  
           <Route path='/additem' element={<AddItem/>}/> 
+          <Route path='/ad/:id' element={<Ad/>}/>
           {/* protected route only when login*/}
 
         </Route>

@@ -25,6 +25,7 @@ export const PrintSearchAds= () => {
                         <img src={`http://localhost:3000/${ad.imageLink.split('src/')[1]}`} alt="image" />
 
                         <p><strong>Title:</strong> {ad.title}</p>
+                        <p><strong>Description:</strong> {ad.description}</p>
                         <p><strong>Price:</strong> {ad.price}</p>
                         <p><strong>Category:</strong> {ad.category}</p>
                     </div>             

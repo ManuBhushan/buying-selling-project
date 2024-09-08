@@ -73,21 +73,35 @@ userRouter.post("/signin",async (req,res)=>{
 
 userRouter.delete("/delete",async(req,res)=>{
     try {
+
         const header=req.header("Authorization") || "";
 
         const validUser=jwt.verify(header,config.JWT_SECRET) as { id: number };
+
         if(!validUser){
                 return res.status(409).send("Invalid user");
         }
         else{       
             const id:number=validUser.id;
 
-           const user= await prisma.user.delete({
-                where:{
-                    id
-                }
-            })
-            console.log(user)
+            const result = await prisma.$transaction(async (prisma) => {
+                await prisma.like.deleteMany({
+                    where: {
+                        userId:id   
+                    },  
+                });
+                const deletedAd = await prisma.ads.deleteMany({
+                    where: {
+                      userId:id
+                    }
+                });
+                const user= await prisma.user.delete({
+                    where:{
+                        id
+                    }
+                })
+                console.log(user)
+            });
         }
         return res.send("Account deleted successfully");
     }

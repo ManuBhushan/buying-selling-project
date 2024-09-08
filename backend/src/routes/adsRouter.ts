@@ -41,6 +41,8 @@ adsRouter.get("/bulk",async (req,res)=>{
         const allads=await prisma.ads.findMany({
             where:{
                 sold:false
+            },orderBy:{
+                createdAt:'desc'
             }
         }) 
         return res.send(allads); // check in front end it response.size ==0 then print  --> No active ads right now 
@@ -60,17 +62,23 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
             const ads= await prisma.ads.findMany({
                 where:{
                     sold:false,
+                },orderBy:{
+                    createdAt:'desc'
                 }
                })        
                return res.send(ads);
         }
         else{
             const ads= await prisma.ads.findMany({
-                where:{
-                    sold:false,
-                    category:category
+                where: {
+                    sold: false,
+                    OR: [
+                        { category: {contains:category,mode:'insensitive' } },
+                        { title: { contains: category, mode: 'insensitive' } },
+                        { description: { contains: category, mode: 'insensitive' } }
+                    ]
                 }
-               })        
+            });    
                return res.send(ads);
         }
     }
@@ -78,6 +86,22 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
     catch(error){
         return res.status(411).send("Error while fetching ads by category");
     }
+})
+
+
+adsRouter.get("/ad/:id",async (req,res)=>{
+        try{
+            const id=req.params.id;
+            const ad=await prisma.ads.findFirst({
+                where:{
+                    id:Number(id)
+                }
+            })
+            return res.send(ad);
+        }
+        catch(error){
+
+        }
 })
 
 adsRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
@@ -169,6 +193,8 @@ adsRouter.delete("/delete/:id", async (req: CustomRequest, res: Response) => {
         return res.status(411).send("Error while deleting ad and likes");
     }
 });
+
+
 
 
 
