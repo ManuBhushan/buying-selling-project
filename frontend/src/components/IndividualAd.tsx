@@ -29,7 +29,7 @@ return (
                         <div className="text-xl font-bold">
                                 Category: {ad?.category.toUpperCase()}
                             </div>
-                          <img src={`http://localhost:3000/${ad?.imageLink.split('src/')[1]}`} alt="image" />                            
+                          <img src={`http://localhost:3000/${ad?.imageLink.split('src/')[1]}`} alt="image"  className="max-w-full h-auto max-h-80 object-contain"/>                            
                         </div>
                     </div>
                     

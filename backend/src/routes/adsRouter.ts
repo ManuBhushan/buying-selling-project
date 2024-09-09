@@ -58,6 +58,8 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
     try{
         // req.query.sort can be { string,string[] }
         const category= typeof req.query.category === 'string' ? req.query.category : 'others';
+        const sort= typeof req.query.sort === 'string' ? req.query.sort : 'none';
+
         if(category==="others"){
             const ads= await prisma.ads.findMany({
                 where:{
@@ -66,6 +68,49 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
                     createdAt:'desc'
                 }
                })        
+               return res.send(ads);
+        }
+        else if(sort==="none"){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                    OR: [
+                        { category: {contains:category,mode:'insensitive' } },
+                        { title: { contains: category, mode: 'insensitive' } },
+                        { description: { contains: category, mode: 'insensitive' } }
+                    ]
+                }
+            });    
+               return res.send(ads);
+        }
+        else if(sort==="asc"){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                    OR: [
+                        { category: {contains:category,mode:'insensitive' } },
+                        { title: { contains: category, mode: 'insensitive' } },
+                        { description: { contains: category, mode: 'insensitive' } }
+                    ]
+                },orderBy:{
+                    price:"asc"
+                }
+            });    
+               return res.send(ads);
+        }
+        else if(sort==="desc"){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                    OR: [
+                        { category: {contains:category,mode:'insensitive' } },
+                        { title: { contains: category, mode: 'insensitive' } },
+                        { description: { contains: category, mode: 'insensitive' } }
+                    ]
+                },orderBy:{
+                    price:"desc"
+                }
+            });    
                return res.send(ads);
         }
         else{
@@ -77,6 +122,8 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
                         { title: { contains: category, mode: 'insensitive' } },
                         { description: { contains: category, mode: 'insensitive' } }
                     ]
+                },orderBy:{
+                    createdAt:"asc"
                 }
             });    
                return res.send(ads);

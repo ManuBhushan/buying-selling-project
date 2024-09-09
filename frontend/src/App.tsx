@@ -8,6 +8,7 @@ import { MyAds } from './pages/MyAds'
 import { AddItem } from './pages/AddItem'
 import SearchAds from './pages/SearchAds'
 import { Ad } from './pages/Ad'
+import { Filter } from './pages/Filter'
 function App() {
 
   return (

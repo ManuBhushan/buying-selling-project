@@ -33,9 +33,10 @@ export const AllAds = () => {
                 
                     <Link to={`/ad/${ad.id}` }
                         key={ad.id} 
-                        className="bg-gray-400 p-6 min-h-[350px] max-h-[400px] rounded shadow w-auto mx-auto border-4 "
+                        className="bg-gray-400 p-6 min-h-[350px] max-h-[400px] w-[300px] rounded shadow w-auto mx-auto border-4 "
                     >   
-                        <img src={`http://localhost:3000/${ad.imageLink.split('src/')[1]}`} alt="image" />
+                        <img src={`http://localhost:3000/${ad.imageLink.split('src/')[1]}`} alt="image" 
+                            className="min-h-[200px] max-h-[200px] min-w-[250px] max-w-[200px] object-cover mx-auto" />
 
                         <p ><strong>Title:</strong> {ad.title}</p>
                         <p><strong>Description:</strong> {ad.description.length > 15 ? ad.description.slice(0, 15) + '...' : ad.description}</p>
@@ -44,7 +45,7 @@ export const AllAds = () => {
                     </Link>             
             ))
         ) : (
-            <p>No Ads available right now</p>
+            <p>No Ads available right now</p>   
         )}
     </div>
     );
