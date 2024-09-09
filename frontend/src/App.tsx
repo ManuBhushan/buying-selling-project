@@ -25,7 +25,7 @@ function App() {
           <Route path='/search' element={<SearchAds/>}/>
           {/* protected route only when login*/}
           <Route path='/profile' element={<Profile/>}/>
-          <Route path='/myads/' element={<MyAds/>}/>  
+          <Route path='/myads' element={<MyAds/>}/>  
           <Route path='/additem' element={<AddItem/>}/> 
           <Route path='/ad/:id' element={<Ad/>}/>
           {/* protected route only when login*/}

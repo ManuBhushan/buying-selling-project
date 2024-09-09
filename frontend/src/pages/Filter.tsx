@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-import { customAds } from '../hooks/CustomAds';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { category, customAds } from '../hooks/CustomAds';
 import { DATABASE_URL } from '../config';
 import axios from 'axios';
 
@@ -12,7 +12,7 @@ export const Filter: React.FC = () => {
   const navigate= useNavigate();
   const setAds=useSetRecoilState(customAds);
   
-  const [cat,setCat]=useState<string>("");
+  const [cat,setCat]=useRecoilState(category);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
 
@@ -34,9 +34,9 @@ export const Filter: React.FC = () => {
       setAds(res.data);
       navigate(`/search?category=${category}`);
 
-} catch (error) {
-      console.log(error);
-}
+  } catch (error) {
+        console.log(error);
+  }
 
   };
 

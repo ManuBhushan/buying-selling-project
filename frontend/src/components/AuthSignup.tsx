@@ -2,6 +2,8 @@ import axios, { AxiosError } from "axios";
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DATABASE_URL } from "../config";
+import { useSetRecoilState } from "recoil";
+import { validUser } from "../hooks/CustomAds";
 
 
 
@@ -10,6 +12,7 @@ export const AuthSignup = () => {
   const [email,setEmail]=useState("");
   const [name,setName]=useState("");
   const [password,setPassword]=useState("");
+  const setUser=useSetRecoilState(validUser);
 
   const handleSubmit=async(e:FormEvent)=>{
     e.preventDefault();
@@ -18,12 +21,13 @@ export const AuthSignup = () => {
         name,email,password
       })
       localStorage.setItem("token",res.data);
+      setUser(true);
       navigate('/');
 
     }
     catch(error){
       if(error instanceof AxiosError){
-        console.log(error.response?.data)}
+        alert(error.response?.data)}
     }
   }
   

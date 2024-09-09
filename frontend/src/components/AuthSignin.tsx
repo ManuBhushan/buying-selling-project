@@ -2,11 +2,14 @@ import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { DATABASE_URL } from "../config";
 import { FormEvent, useState } from "react";
+import { useSetRecoilState } from "recoil";
+import { validUser } from "../hooks/CustomAds";
 
 export const  AuthSignin = () => {
   const navigate=useNavigate();
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
+  const setUser=useSetRecoilState(validUser);
 
 
   const handleSubmit=async (e:FormEvent)=>{
@@ -19,11 +22,12 @@ export const  AuthSignin = () => {
       }
     )
     localStorage.setItem("token",res.data);
+    setUser(true);
 
     navigate('/');
     } catch (error ) {
         if(error instanceof AxiosError)
-        console.log(error.response?.data);
+        alert(error.response?.data);
 
     }
     

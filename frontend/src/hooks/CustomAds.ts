@@ -16,3 +16,15 @@ export const customAds = atom<Ads[]>({
     key: "customAds",
     default: [], 
 });
+
+
+export const validUser=atom<boolean>({
+    key:"validUser",
+    default:false
+})
+
+
+export const category=atom<string>({
+    key:"category",
+    default:"others"
+})
