@@ -151,9 +151,12 @@ adsRouter.get("/ad/:id",async (req,res)=>{
         }
 })
 
+// *******************************//
+
+
 adsRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
     try{
-
+       
     const header=req.header("Authorization") || "";
     const user=jwt.verify(header,config.JWT_SECRET) as { id: number };
     if(!user){
@@ -170,6 +173,21 @@ adsRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
     catch(e){
         return res.status(411).send("Wrong user");
 
+    }
+})
+
+adsRouter.get("/own",async (req:CustomRequest,res:Response)=>{
+    try{
+        const userId=req.userId?.id;
+        const myAds=await prisma.ads.findMany({
+            where:{
+                userId:userId
+            }
+        })
+        return res.send(myAds);
+    }
+    catch(error){
+        return res.status(200).send("Error while fetching your ads");
     }
 })
 
@@ -242,6 +260,43 @@ adsRouter.delete("/delete/:id", async (req: CustomRequest, res: Response) => {
 });
 
 
+
+
+adsRouter.get("/sold", async (req: CustomRequest, res: Response) => {
+    const userId = req.userId?.id;
+   
+    const {id,currentSold}=req.query;
+    
+    try {   
+        if(currentSold==="false"){
+            const ad= await prisma.ads.update({
+                where:{
+                    id:Number(id)
+                },
+                data:{
+                sold:true
+                }
+              })   
+      return res.send(ad);
+
+        }
+        else{
+            const ad= await prisma.ads.update({
+                where:{
+                    id:Number(id)
+                },
+                data:{
+                sold:false
+                }
+              })
+              return res.send(ad);
+
+        }
+    
+    } catch (error) {
+
+    }
+});
 
 
 
