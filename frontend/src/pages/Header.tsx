@@ -1,9 +1,10 @@
 import axios from "axios";
-import { FormEvent, useState } from "react"
+import { FormEvent, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { DATABASE_URL } from "../config";
 import {   useRecoilState,  useSetRecoilState } from "recoil";
 import { category, customAds, validUser } from "../hooks/CustomAds";
+import { UserDropdown } from "../components/UserDropdown";
 
 
 export const Header=()=>{
@@ -12,6 +13,29 @@ export const Header=()=>{
         const [value,setValue]=useState<string>("");
         const setCat=useSetRecoilState(category);
         const setAds=useSetRecoilState(customAds);
+
+
+        useEffect(()=>{ 
+                const fun= async ()=>{
+                        try {
+                       await axios.get(`${DATABASE_URL}/api/v1/ads`,{
+                        headers:{
+                                Authorization: localStorage.getItem("token")
+                        }
+                       })
+                       setUser(true);
+                        } catch (error) {
+                                setUser(false);
+                                navigate("/");
+                                console.log(error);
+
+                        }
+                }
+                fun();
+
+        },[])
+
+
         const logout=()=>{
                 localStorage.removeItem("token");
                         setUser(false);
@@ -57,10 +81,7 @@ return (
                         </form>
 
                        {user?(<div className="flex justify-around items-center   mr-10">
-                                <Link to="/profile" className=" text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 
-                                focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mt-2 mb-2 mr-5">Profile</Link>
-                                <Link to='/myads' className=" text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 
-                                focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mt-2 mb-2 ml-5 mr-5">My Ads</Link>    
+                                <UserDropdown/>
                                 <button onClick={logout} className=" text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 
                                 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mt-2 mb-2 ml-5">Logout</button>     
                         </div>):
@@ -69,12 +90,7 @@ return (
                                 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mt-2 mb-2 mr-5">Signin</Link>
                                 <Link to='/signup' className=" text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 
                                 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mt-2 mb-2 ml-5">Signup</Link>     
-                        </div>)}
-
-
-
-
-                        
+                        </div>)}                        
 
         </div>
    

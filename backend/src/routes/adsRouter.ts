@@ -175,6 +175,9 @@ adsRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
 
     }
 })
+adsRouter.get('/',(req,res)=>{
+    return res.send("Valid user");
+})
 
 adsRouter.get("/own",async (req:CustomRequest,res:Response)=>{
     try{

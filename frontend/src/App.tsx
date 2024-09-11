@@ -8,9 +8,9 @@ import { MyAds } from './pages/MyAds'
 import { AddItem } from './pages/AddItem'
 import SearchAds from './pages/SearchAds'
 import { Ad } from './pages/Ad'
-import { Filter } from './pages/Filter'
-function App() {
+import { Setting } from './pages/Setting'
 
+function App() {
   return (
     <>
      <BrowserRouter>
@@ -28,8 +28,8 @@ function App() {
           <Route path='/myads' element={<MyAds/>}/>  
           <Route path='/additem' element={<AddItem/>}/> 
           <Route path='/ad/:id' element={<Ad/>}/>
+          <Route path='/setting' element={<Setting/>}/>
           {/* protected route only when login*/}
-
         </Route>
 
       </Routes>
