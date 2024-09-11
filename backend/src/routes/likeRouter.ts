@@ -28,7 +28,6 @@ likeRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
 
             const userId={id};
             req.userId=userId;  
-            console.log(id);
             next();
             }
     }
@@ -59,6 +58,29 @@ likeRouter.post("/:id",async (req:CustomRequest,res:Response)=>{
         console.log(error);
         return res.status(411).send("Error while liking ad");
     }
+})
+
+likeRouter.get("/liked",async (req:CustomRequest,res:Response)=>{
+
+    try{
+        const userId=req.userId?.id;
+        const likedads=await prisma.like.findMany({
+            where:{
+                userId:userId
+            },
+            select:{
+                ad:true,
+                id:true
+            }
+        })
+        console.log(likedads);
+        return res.send(likedads)
+    }
+    catch(error){
+        return res.status(411).send("Error while fetching liked ads");
+    }   
+
+
 })
 
 export default likeRouter

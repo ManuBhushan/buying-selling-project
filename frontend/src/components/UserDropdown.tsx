@@ -34,13 +34,17 @@ export const  UserDropdown=()=> {
             </Link>
             </MenuItem>
             <MenuItem>
+            <Link to="/liked" className="block text-white text-md hover:bg-gray-900  
+            font-medium text-sm px-10 py-2">
+                    Liked Ads
+            </Link>
+            </MenuItem>
+            <MenuItem>
             <Link to="/setting" className="block text-white text-md hover:bg-gray-900  
             font-medium text-sm px-10 py-2">
                     Settings
             </Link>
             </MenuItem>
-            
-            
             </div>
     </MenuItems>
     </Menu>

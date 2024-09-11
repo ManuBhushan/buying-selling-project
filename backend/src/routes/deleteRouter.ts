@@ -40,7 +40,7 @@ interface CustomRequest extends Request {
 })
 
 
-deleteRouter.post("/:id",async (req:CustomRequest,res:Response)=>{
+deleteRouter.delete("/:id",async (req:CustomRequest,res:Response)=>{
     try {
 
         const likeId=req.params.id;        

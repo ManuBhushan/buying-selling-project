@@ -179,7 +179,7 @@ adsRouter.get('/',(req,res)=>{
     return res.send("Valid user");
 })
 
-adsRouter.get("/own",async (req:CustomRequest,res:Response)=>{
+    adsRouter.get("/own",async (req:CustomRequest,res:Response)=>{
     try{
         const userId=req.userId?.id;
         const myAds=await prisma.ads.findMany({

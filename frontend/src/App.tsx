@@ -9,6 +9,7 @@ import { AddItem } from './pages/AddItem'
 import SearchAds from './pages/SearchAds'
 import { Ad } from './pages/Ad'
 import { Setting } from './pages/Setting'
+import { LikedAds } from './pages/LikedAds'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path='/additem' element={<AddItem/>}/> 
           <Route path='/ad/:id' element={<Ad/>}/>
           <Route path='/setting' element={<Setting/>}/>
+          <Route path='/liked' element={<LikedAds/>}/>
           {/* protected route only when login*/}
         </Route>
 
