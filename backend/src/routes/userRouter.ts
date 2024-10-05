@@ -110,5 +110,39 @@ userRouter.delete("/delete",async(req,res)=>{
 
     }
 })
+
+userRouter.get("/profile",async(req,res)=>{
+    try {
+
+        const header=req.header("Authorization") || "";
+
+        const validUser=jwt.verify(header,config.JWT_SECRET) as { id: number };
+
+        if(!validUser){
+                return res.status(409).send("Invalid user");
+        }
+
+        const id:number=validUser.id;
+        const profile=await prisma.user.findFirst({
+            where:{
+           id:id     
+            },
+            select:{
+                name: true,
+                email: true,
+                createdAt:true,
+                updatedAt:true,
+            }
+        })
+        return res.send(profile);
+          
+        
+      
+    }
+    catch(e){
+        return  res.status(411).send("Error while fetching profile info");
+
+    }
+})
 export default userRouter;
 

@@ -37,29 +37,6 @@ likeRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
     }
 })
 
-
-likeRouter.post("/:id",async (req:CustomRequest,res:Response)=>{
-    try {
-        const userId =req.userId?.id;
-        const adId=req.params.id;
-        console.log(adId);
-        
-        const ad=await prisma.like.create({
-            data:{
-                userId:userId || 0,
-                adId:Number(adId)
-            },include:{
-                ad:true
-            }
-
-        })
-        return res.send(ad);
-    } catch (error) {
-        console.log(error);
-        return res.status(411).send("Error while liking ad");
-    }
-})
-
 likeRouter.get("/liked",async (req:CustomRequest,res:Response)=>{
 
     try{
@@ -82,5 +59,51 @@ likeRouter.get("/liked",async (req:CustomRequest,res:Response)=>{
 
 
 })
+
+likeRouter.get("/check/:id",async (req:CustomRequest,res:Response)=>{
+
+    try{
+        const userId=req.userId?.id;
+        const adId=req.params.id;
+        const likedads=await prisma.like.findFirst({
+            where:{
+                userId:userId,
+                adId:Number(adId)
+            }
+        })
+        console.log(likedads);
+        if(!likedads)return res.send("false")
+       
+        return res.send("true");
+    }
+    catch(error){
+        return res.status(411).send("Error while fetching liked ads");
+    }   
+
+
+})
+
+
+likeRouter.get("/:id",async (req:CustomRequest,res:Response)=>{
+    try {
+        const userId =req.userId?.id;
+        const adId=req.params.id;
+        
+        const ad=await prisma.like.create({
+            data:{
+                userId:userId || 0,
+                adId:Number(adId)
+            },include:{
+                ad:true
+            }
+
+        })
+        return res.send(ad);
+    } catch (error) {
+        console.log(error);
+        return res.status(411).send("Error while liking ad");
+    }
+})
+
 
 export default likeRouter

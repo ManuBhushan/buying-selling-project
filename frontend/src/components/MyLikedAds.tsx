@@ -13,6 +13,7 @@ interface Ads {
   title: string;
   userId: number;
   createdAt: Date;
+  liked:boolean;
 }
 
 interface MyIndividualAdsProps {
@@ -39,7 +40,7 @@ export const MyLikedAds = ({ adItem }:{adItem:MyIndividualAdsProps}) => {
     setLoading(true);
     try {
         console.log(adItem.id);
-      await axios.delete(`${DATABASE_URL}/api/v1/unlike/${adItem.id}`, {
+      await axios.delete(`${DATABASE_URL}/api/v1/unlike/${adItem.ad.id}`, {
         headers: {
           Authorization: localStorage.getItem("token")
         }

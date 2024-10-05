@@ -37,22 +37,22 @@ const upload = multer({ storage: storage });
 
 
 adsRouter.get("/bulk",async (req,res)=>{
-    try{
-        const allads=await prisma.ads.findMany({
-            where:{
-                sold:false
-            },orderBy:{
-                createdAt:'desc'
-            }
-        }) 
-        return res.send(allads); // check in front end it response.size ==0 then print  --> No active ads right now 
-    }
-    catch(error){
-        return res.status(411).send("Error while fetching ads");
-        // what if their are no adds availabe on the website 
-        
-    }
+   
+        try{
+            const allads=await prisma.ads.findMany({
+                where:{
+                    sold:false
+                },orderBy:{
+                    createdAt:'desc'
+                }
+            }) 
+            return res.send(allads); 
+        }
+        catch(error){
+            return res.status(411).send("Error while fetching ads");        
+        }
 })  
+
 
 adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
     try{
@@ -175,6 +175,45 @@ adsRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
 
     }
 })
+adsRouter.get("/bulk/withlike", async (req: CustomRequest, res: Response) => {
+    try {
+      const userId = req.userId?.id;
+  
+      // Fetch all ads from the database
+      const ads = await prisma.ads.findMany({
+        where: {
+          sold: false,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+  
+      // Fetch all the ads liked by the user
+      const likedAds = await prisma.like.findMany({
+        where: {
+          userId: userId,
+        },
+        select: {
+          adId: true, // Get the ids of the liked ads
+        },
+      });
+  
+      // Create a Set of liked ad IDs for quick lookup
+      const likedAdIds = new Set(likedAds.map(like => like.adId));
+  
+      // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+      const adsWithLikeStatus = ads.map(ad => ({
+        ...ad,
+        liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+      }));
+  
+      return res.send(adsWithLikeStatus);
+    } catch (error) {
+      return res.status(411).send("Error while fetching ads");
+    }
+  });
+  
 adsRouter.get('/',(req,res)=>{
     return res.send("Valid user");
 })

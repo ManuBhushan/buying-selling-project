@@ -14,7 +14,6 @@ export const Header=()=>{
         const setCat=useSetRecoilState(category);
         const setAds=useSetRecoilState(customAds);
 
-
         useEffect(()=>{ 
                 const fun= async ()=>{
                         try {

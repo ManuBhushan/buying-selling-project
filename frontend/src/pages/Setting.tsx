@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Profile } from "../components/Profile";
 
 export const  Setting=()=>{
   const [updateprofile , setUpdateProfile]=useState<boolean>(false);
@@ -15,7 +16,7 @@ export const  Setting=()=>{
 
         <div className="bg-slate-400">
 
-      { updateprofile && < div className="bg-red-200"> up </div> }
+      { updateprofile && <Profile/> }
 
 
         </div>

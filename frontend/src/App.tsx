@@ -3,7 +3,6 @@ import { Signin } from './pages/Signin'
 import { Layout } from './pages/Layout'
 import { HomePage } from './pages/HomePage'
 import { Signup } from './pages/Signup'
-import { Profile } from './pages/Profile'
 import { MyAds } from './pages/MyAds'
 import { AddItem } from './pages/AddItem'
 import SearchAds from './pages/SearchAds'
@@ -25,7 +24,6 @@ function App() {
           <Route path='/signup' element={<Signup/>}/>
           <Route path='/search' element={<SearchAds/>}/>
           {/* protected route only when login*/}
-          <Route path='/profile' element={<Profile/>}/>
           <Route path='/myads' element={<MyAds/>}/>  
           <Route path='/additem' element={<AddItem/>}/> 
           <Route path='/ad/:id' element={<Ad/>}/>

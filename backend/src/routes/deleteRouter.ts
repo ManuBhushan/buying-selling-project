@@ -42,12 +42,15 @@ interface CustomRequest extends Request {
 
 deleteRouter.delete("/:id",async (req:CustomRequest,res:Response)=>{
     try {
-
-        const likeId=req.params.id;        
+        const userId=req.userId?.id
+        const adId=req.params.id;        
         const ad=await prisma.like.delete({
-            where:{
-              id:Number(likeId)
-            }
+           where:{
+            userId_adId: {
+                userId: Number(userId),
+                adId: Number(adId),
+              }
+           } 
         })
         return res.send(ad);
     } catch (error) {

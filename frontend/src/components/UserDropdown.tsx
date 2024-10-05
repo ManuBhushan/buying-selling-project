@@ -22,12 +22,6 @@ export const  UserDropdown=()=> {
     >
             <div className="py-1 bg-gray-800">
             <MenuItem>
-            <Link to="/profile" className="block text-white text-md hover:bg-gray-900  
-            font-medium text-sm px-10 py-2 ">
-                    Profile
-            </Link>
-            </MenuItem>
-            <MenuItem>
             <Link to="/myads" className="block text-white text-md hover:bg-gray-900  
             font-medium text-sm px-10 py-2">
                     My Ads
