@@ -43,7 +43,7 @@ export const Filter: React.FC = () => {
   const handleSubmit2 = async(sort: string) => {
     try {
       setIsOpen2((c)=>!c);
-      const res=await axios.get(`${DATABASE_URL}/api/v1/ads/search?category=${cat  }&sort=${sort}`)
+      const res=await axios.get(`${DATABASE_URL}/api/v1/ads/search?category=${cat}&sort=${sort}`)
       console.log(res.data);
       setAds(res.data);
       navigate(`/search?category=${cat}&sort=${sort}`);

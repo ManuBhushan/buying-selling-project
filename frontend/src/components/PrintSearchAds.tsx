@@ -26,7 +26,7 @@ export const PrintSearchAds= () => {
                   className="min-h-[200px] max-h-[200px] min-w-[250px] max-w-[200px] object-cover mx-auto"  />
 
                 <p ><strong>Title:</strong> {ad.title}</p>
-                <p><strong>Description:</strong> {ad.description.length > 15 ? ad.description.slice(0, 15) + '...' : ad.description}</p>
+                <p><strong>Description:</strong> {ad.description?.length > 15 ? ad.description.slice(0, 15) + '...' : ad.description}</p>
                 <p><strong>Price:</strong> {ad.price}</p>
                 <p><strong>Category:</strong> {ad.category}</p>
             </Link>               

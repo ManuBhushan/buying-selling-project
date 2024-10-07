@@ -128,7 +128,7 @@ export const AllAds = () => {
                             <img src={`http://localhost:3000/${ad.imageLink.split('src/')[1]}`} alt="image"
                                 className="min-h-[200px] max-h-[200px] min-w-[250px] max-w-[200px] object-cover mx-auto" />
                             <p><strong>Title:</strong> {ad.title}</p>
-                            <p><strong>Description:</strong> {ad.description.length > 15 ? ad.description.slice(0, 15) + '...' : ad.description}</p>
+                            <p><strong>Description:</strong> {ad.description?.length > 15 ? ad.description.slice(0, 15) + '...' : ad.description}</p>
                             <p><strong>Price:</strong> {ad.price}</p>
                             <p><strong>Category:</strong> {ad.category}</p>
                         </Link>
@@ -143,12 +143,16 @@ export const AllAds = () => {
 
                          </button> )
                         :
-                        (<></>)
-                    } 
-
-                        
-                      
-
+                        ( <button 
+                            className="absolute top-1 right-1.5 bg-red-500 text-white 
+                                        w-8 h-8 rounded-full flex items-center justify-center"
+                            onClick={()=>handelLikeSubmit(ad.id)}
+                            >
+                            <span className="text-lg">L</span>
+                            
+                            
+                             </button>
+                             ) } 
 
                     </div>
                 ))

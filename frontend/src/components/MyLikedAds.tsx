@@ -46,7 +46,7 @@ export const MyLikedAds = ({ adItem }:{adItem:MyIndividualAdsProps}) => {
         }
       });
       setNotification({ message: 'Ad unliked successfully!', type: 'success' });
-      setTimeout(() => window.location.reload(), 2000);
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       setNotification({ message: 'Error while unliking Ad', type: 'error' });
     } finally {
@@ -72,7 +72,7 @@ export const MyLikedAds = ({ adItem }:{adItem:MyIndividualAdsProps}) => {
                 Created at: {adItem.ad?.createdAt.toLocaleString()}
               </div>
               <div className="text-xl font-bold">
-                Category: {adItem.ad?.category.toUpperCase()}
+                Category: {adItem.ad?.category?.toUpperCase()}
               </div>
               <img
                 src={`http://localhost:3000/${adItem.ad?.imageLink.split('src/')[1]}`}
@@ -82,10 +82,10 @@ export const MyLikedAds = ({ adItem }:{adItem:MyIndividualAdsProps}) => {
             </div>
           </div>
           <div className="text-4xl font-extrabold pt-4">
-            Title: {adItem.ad?.title.toUpperCase()}
+            Title: {adItem.ad?.title?.toUpperCase()}
           </div>
           <div className="text-xl font-md pt-2">
-            {adItem.ad?.description.toLowerCase()}
+            {adItem.ad?.description?.toLowerCase()}
           </div>
           <div className="pt-4 break-words text-2xl font-bold">
             Price: {adItem.ad?.price}

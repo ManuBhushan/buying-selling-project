@@ -144,5 +144,89 @@ userRouter.get("/profile",async(req,res)=>{
 
     }
 })
+
+userRouter.post("/update-profile",async(req,res)=>{
+    try {
+
+        const header=req.header("Authorization") || "";        
+        const validUser=jwt.verify(header,config.JWT_SECRET) as { id: number };
+
+        if(!validUser){
+                return res.status(409).send("Invalid user");
+        }
+        const {name,email}=req.body;
+        const id:number=validUser.id;
+
+        const ExistingUser=await prisma.user.findFirst({
+            where:{
+                email:email
+            }
+            ,select:{
+                id:true
+            }
+        })
+        if(ExistingUser && ExistingUser.id!=id){
+            return res.status(409).send("Email already in use ");
+        }
+        await prisma.user.update({
+            where:{
+                id:id
+            }
+            ,data:{
+                name,
+                email
+            }
+        })
+        return res.status(200).send("Profile Updated Successfully");
+
+    }
+    catch(e){
+        return res.status(411).send("Error while updating profile");
+    }
+});
+
+userRouter.post("/update-password",async(req,res)=>{
+    try {
+
+        const header=req.header("Authorization") || "";        
+        const validUser=jwt.verify(header,config.JWT_SECRET) as { id: number };
+
+        if(!validUser){
+                return res.status(409).send("Invalid user");
+        }
+
+        const {oldPassword , newPassword}=req.body;
+        const id:number=validUser.id;
+
+        const user=await prisma.user.findFirst({
+            where:{
+                id
+            }
+        });
+        
+        const result= await bcrypt.compare(oldPassword , user?.password || "");
+
+        if(!result){
+            return res.status(409).send("Incorrect Password");
+        }
+
+        const hasdedPassword=await bcrypt.hash(newPassword,10);
+
+        await prisma.user.update({
+            where:{
+                id
+            },data:{
+                password:hasdedPassword
+            }
+        })
+
+        return res.send("Password updated Successfully!");  
+    }
+    catch(e){
+        return res.status(411).send("Error while updating password");
+    }
+})
+
+
 export default userRouter;
 

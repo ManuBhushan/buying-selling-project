@@ -20,8 +20,8 @@ interface CustomRequest extends Request {
     const storage = multer.diskStorage({
         destination:(req,file,cb)=>{
             const destinationPath = path.join(__dirname, '..', '..', config.UPLOADS_DIR);
-            console.log(destinationPath);
             cb(null, destinationPath);
+            
         },
         filename:(req,file,cb)=>{
             const fileName=Date.now()+'-'+file.originalname;
@@ -59,8 +59,9 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
         // req.query.sort can be { string,string[] }
         const category= typeof req.query.category === 'string' ? req.query.category : 'others';
         const sort= typeof req.query.sort === 'string' ? req.query.sort : 'none';
-
-        if(category==="others"){
+        console.log("c",category);
+        console.log("s",sort);
+        if(category==="others" && sort==="none"){
             const ads= await prisma.ads.findMany({
                 where:{
                     sold:false,
@@ -79,6 +80,37 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
                         { title: { contains: category, mode: 'insensitive' } },
                         { description: { contains: category, mode: 'insensitive' } }
                     ]
+                }
+            });    
+               return res.send(ads);
+        }
+        else if(category==="others" && sort==="asc"){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                },orderBy:{
+                    price:"asc"
+                }
+            });    
+               return res.send(ads);
+        }
+        else if(category==="others" && sort==='desc'){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                },orderBy:{
+                    price:"desc"
+                }
+            });    
+               return res.send(ads);
+        }
+        else if(category==='others' && sort==='createdAt'){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                   
+                },orderBy:{
+                    createdAt:"asc"
                 }
             });    
                return res.send(ads);
@@ -113,7 +145,7 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
             });    
                return res.send(ads);
         }
-        else{
+        else if(sort==='createdAt'){
             const ads= await prisma.ads.findMany({
                 where: {
                     sold: false,
@@ -236,7 +268,7 @@ adsRouter.get('/',(req,res)=>{
 adsRouter.post("/createAd",upload.single('file'), async (req:CustomRequest,res:Response)=>{
     try {
         const userid=req.userId?.id;
-        const { price, title, description, category,imageLink, } = req.body;
+        const { price, title, description, category,file } = req.body;
         const data = {
             userId:userid,
             price: Number(price),

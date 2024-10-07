@@ -30,7 +30,7 @@ model Ads{
 
   id          Int @id @default(autoincrement())
   category    String @default("others")
-  price       Float      // updated from string to float
+  price       Float      
   sold        Boolean @default(false)
   title       String?
   description String?
