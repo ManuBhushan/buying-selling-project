@@ -26,17 +26,17 @@ return (
                         Created at:{ad?.createdAt}
                     </div>
                         <div className="text-xl font-bold">
-                                Category: {ad?.category.toUpperCase()}
+                                Category: {ad?.category?.toUpperCase()}
                             </div>
                           <img src={`http://localhost:3000/${ad?.imageLink.split('src/')[1]}`} alt="image"  className="max-w-full h-auto max-h-80 object-contain"/>                            
                         </div>
                     </div>
                     
                     <div className="text-4xl font-extrabold pt-4">
-                        Title: {ad?.title.toUpperCase()}
+                        Title: {ad?.title?.toUpperCase()}
                     </div>
                     <div className="text-xl font-md pt-2">
-                       {ad?.description.toLowerCase()}
+                       {ad?.description?.toLowerCase()}
                     </div>
                     <div className="pt-4 break-words text-2xl font-bold ">
                       Price: {ad?.price}

@@ -56,13 +56,13 @@ export const Filter: React.FC = () => {
 
   
   return (
-    <div className='border-r-2 '>
-
-      <div className='mt-10 ml-4 '>
+    <div className="p-4">
+      {/* Categories Button */}
+      <div className="mt-4">
         <button
-          id="dropdownDelayButton"
+          id="dropdownCategoriesButton"
           onClick={handleButtonClick}
-          className="text-white bg-blue-700 ml-5 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md px-6 py-3 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-white bg-blue-700 w-full lg:w-auto hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md px-6 py-3 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           type="button"
         >
           All Categories
@@ -83,21 +83,19 @@ export const Filter: React.FC = () => {
           </svg>
         </button>
 
-        {/* Dropdown menu */}
+        {/* Dropdown Menu for Categories */}
         <div
-          id="dropdownDelay"
-          className={`z-10 ${isOpen ? 'block' : 'hidden'} bg-white divide-y divide-gray-100 rounded-lg shadow w-50 dark:bg-gray-700`}
+          id="dropdownCategories"
+          className={`z-10 ${isOpen ? 'block' : 'hidden'} bg-white divide-y divide-gray-100 rounded-lg shadow w-full lg:w-50 dark:bg-gray-700`}
         >
-          <ul className="py-2 text-md text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDelayButton">
+          <ul className="py-2 text-md text-gray-700 dark:text-gray-200">
             <li>
-
               <button
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 onClick={() => handleSubmit('Electronic')}
               >
                 Electronics
               </button>
-
               <button
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 onClick={() => handleSubmit('Mobile')}
@@ -122,38 +120,35 @@ export const Filter: React.FC = () => {
               </button>
             </li>
             <li>
-            <button
+              <button
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 onClick={() => handleSubmit('Sport')}
               >
                 Sports
               </button>
-               <button
+              <button
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 onClick={() => handleSubmit('Cycle')}
               >
                 Cycle
               </button>
-
               <button
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 onClick={() => handleSubmit('Cooler')}
               >
                 Cooler
               </button>
-               
             </li>
           </ul>
         </div>
       </div>
 
-
-      
- <div className='mt-10 ml-4 '>
+      {/* Filters Button */}
+      <div className="mt-4">
         <button
-          id="dropdownDelayButton"
+          id="dropdownFiltersButton"
           onClick={handleButtonClick2}
-          className="text-white bg-blue-700 ml-12 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md px-6 py-3 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-white bg-blue-700 w-full lg:w-auto hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md px-6 py-3 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           type="button"
         >
           Filters
@@ -174,41 +169,35 @@ export const Filter: React.FC = () => {
           </svg>
         </button>
 
-        {/* Dropdown menu */}
+        {/* Dropdown Menu for Filters */}
         <div
-          id="dropdownDelay"
-          className={`z-10 ${isOpen2 ? 'block' : 'hidden'} bg-white divide-y divide-gray-100 rounded-lg shadow w-50 dark:bg-gray-700`}
+          id="dropdownFilters"
+          className={`z-10 ${isOpen2 ? 'block' : 'hidden'} bg-white divide-y divide-gray-100 rounded-lg shadow w-full lg:w-50 dark:bg-gray-700`}
         >
-          <ul className="py-2 text-md text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDelayButton">           
+          <ul className="py-2 text-md text-gray-700 dark:text-gray-200">
             <li>
-            <button
+              <button
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 onClick={() => handleSubmit2('desc')}
               >
                 High to Low
               </button>
-               <button
+              <button
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 onClick={() => handleSubmit2('asc')}
               >
                 Low to High
               </button>
-
               <button
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 onClick={() => handleSubmit2('createdAt')}
               >
                 Date Published
               </button>
-               
             </li>
           </ul>
         </div>
       </div>
-
-     
-
-      
     </div>
   );
 };

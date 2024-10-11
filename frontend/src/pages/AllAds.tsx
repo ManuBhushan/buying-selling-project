@@ -111,54 +111,65 @@ export const AllAds = () => {
     }, []);
 
     return (
-    
-        <div className="p-4 grid grid-cols-4 gap-4">
-            {loading && <Spinner/>}
-            {notification && (
-        <NotificationModel
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
-      )}
-            {allads?.length ? (
-                allads.map((ad) => (
-                    <div key={ad.id} className="relative">
-                        <Link to={`/ad/${ad.id}`}
-                            className="block bg-gray-400 p-6 min-h-[350px] max-h-[400px] w-[300px] rounded shadow mx-auto border-4">
-                            <img src={`http://localhost:3000/${ad.imageLink.split('src/')[1]}`} alt="image"
-                                className="min-h-[200px] max-h-[200px] min-w-[250px] max-w-[200px] object-cover mx-auto" />
-                            <p><strong>Title:</strong> {ad.title}</p>
-                            <p><strong>Description:</strong> {ad.description?.length > 15 ? ad.description.slice(0, 15) + '...' : ad.description}</p>
-                            <p><strong>Price:</strong> {ad.price}</p>
-                            <p><strong>Category:</strong> {ad.category}</p>
-                        </Link>
-                        {
-                            login ?
-                             ( <button 
-                        className="absolute top-1 right-1.5 bg-red-500 text-white 
-                                    w-8 h-8 rounded-full flex items-center justify-center"
-                        onClick={ !(ad.liked) ? () => handelLikeSubmit(ad.id): ()=>handelUnlikeSubmit(ad.id)}
-                        >
-                        { ad.liked ? (<span className="text-lg">U</span>) : (<span className="text-lg">L</span>)}
+        <div className="p-4 grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" }}>
+                {loading && <Spinner />}
+                {notification && (
+                    <NotificationModel
+                        message={notification.message}
+                        onClose={() => setNotification(null)}
+                    />
+                )}
 
-                         </button> )
-                        :
-                        ( <button 
-                            className="absolute top-1 right-1.5 bg-red-500 text-white 
-                                        w-8 h-8 rounded-full flex items-center justify-center"
-                            onClick={()=>handelLikeSubmit(ad.id)}
-                            >
-                            <span className="text-lg">L</span>
+                {
+                    allads?.length ? (
+                        allads.map((ad) => (
                             
-                            
-                             </button>
-                             ) } 
+                        <div key={ad.id} className="relative">
+                           
+                            <div className="block bg-gray-400 p-6 min-h-[350px] max-h-[400px] min-w-[250px] rounded shadow mx-auto border-4">
+                               
+                                {
+                                login ? (
+                                    <button
+                                        className="bg-red-500 text-white w-8 h-8 rounded-full mb-2"
+                                        onClick={!ad.liked ? () => handelLikeSubmit(ad.id) : () => handelUnlikeSubmit(ad.id)}
+                                    >
+                                        {ad.liked ? (<span className="text-lg">U</span>) : (<span className="text-lg">L</span>)}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="bg-red-500 text-white w-8 h-8 rounded-full"
+                                        onClick={() => handelLikeSubmit(ad.id)}
+                                    >
+                                        <span className="text-lg">L</span>
+                                    </button>
+                                )
+                                }
 
-                    </div>
-                ))
-            ) : (
-                <p>No Ads available right now</p>
-            )}
+                            <Link to={`/ad/${ad.id}` }
+                                key={ad.id} 
+                                >   
+                                <img src={`http://localhost:3000/${ad.imageLink.split('src/')[1]}`} alt="image"
+                                className="min-h-[200px] max-h-[200px] object-cover mx-auto"  />
+
+                                <p ><strong>Title:</strong> {ad.title}</p>
+                                <p><strong>Description:</strong> {ad.description?.length > 15 ? ad.description.slice(0, 15) + '...' : ad.description}</p>
+                                <p><strong>Price:</strong> {ad.price}</p>
+                                <p><strong>Category:</strong> {ad.category}</p>
+                             </Link>  
+
+                            
+                        </div>
+
+
+
+                        </div>
+                    ))
+                ) :
+                (
+                    <p>No Ads available right now</p>
+                )
+            }
         </div>
     );
 };
