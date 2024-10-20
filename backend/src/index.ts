@@ -42,7 +42,7 @@ io.on("connection",(socket)=>{
            const {message,receiverId,adId,senderName,title}=data;
            console.log("private-message: ",data);
            io.to((map.get(String(receiverId)))).emit("private-message",{message,adId,senderId:userId});
-           io.to((map.get(String(receiverId)))).emit("notification",{senderName,title,message});
+        //    io.to((map.get(String(receiverId)))).emit("notification",{senderName,title,message});
 
         })
 
