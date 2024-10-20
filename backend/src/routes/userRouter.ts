@@ -29,7 +29,7 @@ userRouter.post('/signup', async (req,res)=>{
             }
         })
         const token= jwt.sign({id:newUser.id,name:body.name , email:body.email },config.JWT_SECRET);
-        return res.send(token);
+        return res.send({token,userId:newUser.id,userName:newUser.name});
 
     } catch (error) {
         console.log(error);
@@ -60,9 +60,9 @@ userRouter.post("/signin",async (req,res)=>{
 
         if(!result){
             return res.status(409).send("Wrong inputs");
-        }
+        }   
         const token= jwt.sign({id:user.id,name:user.name, email:user.email },config.JWT_SECRET);
-        return res.send(token);
+        return res.send({token,userId:user.id,userName:user.name});
 
     } catch (error) {
         return res.status(411).send("Error while signing user");

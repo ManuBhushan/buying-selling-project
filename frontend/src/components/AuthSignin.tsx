@@ -21,9 +21,8 @@ export const  AuthSignin = () => {
         password
       }
     )
-    localStorage.setItem("token",res.data);
-    setUser(true);
-
+    localStorage.setItem("token",res.data.token);
+    setUser({isValid:true,userId:res.data.userId,userName:res.data.userName});
     navigate('/');
     } catch (error ) {
         if(error instanceof AxiosError)

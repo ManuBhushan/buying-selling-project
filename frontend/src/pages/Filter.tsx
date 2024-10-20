@@ -30,7 +30,6 @@ export const Filter: React.FC = () => {
       setIsOpen((c)=>!c);
       setCat(category);
       const res=await axios.get(`${DATABASE_URL}/api/v1/ads/search?category=${category  }`)
-      console.log(res.data);
       setAds(res.data);
       navigate(`/search?category=${category}`);
 
@@ -44,7 +43,6 @@ export const Filter: React.FC = () => {
     try {
       setIsOpen2((c)=>!c);
       const res=await axios.get(`${DATABASE_URL}/api/v1/ads/search?category=${cat}&sort=${sort}`)
-      console.log(res.data);
       setAds(res.data);
       navigate(`/search?category=${cat}&sort=${sort}`);
 

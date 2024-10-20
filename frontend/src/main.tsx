@@ -5,9 +5,7 @@ import './index.css'
 import { RecoilRoot } from 'recoil'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <RecoilRoot>
     <App />
     </RecoilRoot>
-  </StrictMode>,
 )

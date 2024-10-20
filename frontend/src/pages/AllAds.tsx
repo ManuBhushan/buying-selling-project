@@ -1,10 +1,11 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { DATABASE_URL } from "../config";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { validUser } from "../hooks/CustomAds";
+import {   validUser } from "../hooks/CustomAds";
 import { NotificationModel } from "../components/NotificationModel";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
 interface Ads {
     category: string;
@@ -28,9 +29,8 @@ const Spinner = () => (
 export const AllAds = () => {
     const [allads, setAllAds] = useState<Ads[]>();
     const [loading, setLoading] = useState<boolean>(false);
-    const login=useRecoilValue(validUser);
+    const login=useRecoilValue(validUser).isValid;
     const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
-
     const navigate=useNavigate();
 
       const handelLikeSubmit= async (id:number)=>{
@@ -47,20 +47,19 @@ export const AllAds = () => {
             setNotification({ message: 'Ad Liked Successfully!', type: 'success' });
             setTimeout(() => window.location.reload(), 2000);
         } catch (error) {
-
             navigate('/signin');
 
         }finally{
             setLoading(false);
-
-
         }
     };
+
     const handelUnlikeSubmit = async (id:number)=>{
        
-        if(!login){
-            navigate("/signin")
-    }
+    if(!login){
+        navigate("/signin")
+    }   
+
     setLoading(true);
     try {
         const res=await axios.delete(`${DATABASE_URL}/api/v1/unlike/${id}`, { 
@@ -76,7 +75,6 @@ export const AllAds = () => {
 
     }finally{
         setLoading(false);
-
 
     }
 
@@ -100,7 +98,6 @@ export const AllAds = () => {
         else{
             axios.get(`${DATABASE_URL}/api/v1/ads/bulk`)
                 .then(res => {
-                    console.log(res.data);
                     setAllAds(res.data);
                 })
                 .catch(error => {
@@ -110,7 +107,10 @@ export const AllAds = () => {
         
     }, []);
 
+
+
     return (
+        <>
         <div className="p-4 grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" }}>
                 {loading && <Spinner />}
                 {notification && (
@@ -131,17 +131,17 @@ export const AllAds = () => {
                                 {
                                 login ? (
                                     <button
-                                        className="bg-red-500 text-white w-8 h-8 rounded-full mb-2"
+                                        
                                         onClick={!ad.liked ? () => handelLikeSubmit(ad.id) : () => handelUnlikeSubmit(ad.id)}
                                     >
-                                        {ad.liked ? (<span className="text-lg">U</span>) : (<span className="text-lg">L</span>)}
+                                        {ad.liked ? (<MdFavorite size={20}/>) : (<MdFavoriteBorder size={20}/>)}
                                     </button>
                                 ) : (
                                     <button
-                                        className="bg-red-500 text-white w-8 h-8 rounded-full"
+                                        
                                         onClick={() => handelLikeSubmit(ad.id)}
                                     >
-                                        <span className="text-lg">L</span>
+                                        <MdFavoriteBorder size={20}/>
                                     </button>
                                 )
                                 }
@@ -171,5 +171,6 @@ export const AllAds = () => {
                 )
             }
         </div>
+        </>
     );
 };

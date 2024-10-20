@@ -23,7 +23,7 @@ model User{
   like    Like[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  messages Messages[]
 }
 
 model Ads{
@@ -40,7 +40,7 @@ model Ads{
   like       Like[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  messages Messages[]
 }
 
 model Like{
@@ -52,6 +52,17 @@ model Like{
   ad        Ads @relation(fields: [adId],references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@unique([userId,adId])  // combination of this should be unique in the db
+  @@unique([userId,adId]) 
   
+}
+
+model Messages{
+  id Int @id @default(autoincrement())
+  participants  Int[]
+  adId Int
+  ad Ads @relation(fields: [adId],references: [id])
+  message String
+  senderId Int
+  sender User @relation(fields: [senderId] ,references: [id])
+  createdAt DateTime @default(now())
 }

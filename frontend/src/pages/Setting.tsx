@@ -16,12 +16,16 @@ export const  Setting=()=>{
 
         <button className="p-5  text-lg font-bold hover:text-white " onClick={()=>{ setUpdateProfile((c)=>!c);
           setUpadatePassword(false);
+          setDeleteAccount(false);
+          
         }
         }>Update Profile</button>
 
         <button className="p-5 mt-5 text-lg font-bold hover:text-white  " onClick={()=>{
           setUpadatePassword((c)=>!c);
-          setUpdateProfile(false);} 
+          setUpdateProfile(false);
+          setDeleteAccount(false);
+        } 
           }>Update Password</button>
 
            <button className="p-5 mt-5 text-lg font-bold hover:text-white  " onClick={()=>{

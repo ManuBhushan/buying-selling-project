@@ -16,10 +16,15 @@ interface Ads{
 }
 const { persistAtom } = recoilPersist();
 
+interface validUser{
+  isValid:boolean,
+  userId:number,
+  userName:string
+}
 
 const checkValidUser = async () => {
   const token = localStorage.getItem("token");
-  if (!token) return false; // If no token, user is not valid
+  if (!token) return {isValid:false,userId:0,userName:"Invalid User"}; // If no token, user is not valid
 
   try {
     // Make an API call to validate the token
@@ -30,22 +35,23 @@ const checkValidUser = async () => {
     });
     
     // If token is valid, return true, else false
-    return response.data.isValid;
+    return {isValid:response.data.validUser, userId:response.data.userId,userName:response.data.userName};
   } catch (error) {
     console.error("Token validation failed", error);
-    return false;
+    return {isValid:false,userId:0,userName:"Invalid User"};
   }
 };
 
 // Recoil atom for validUser state
-export const validUser = atom<boolean>({
+
+export const validUser = atom<validUser>({
   key: "validUser",
-  default: false, // Initial value false
+  default: {isValid:false , userId:0, userName:"Invalid User" }, // Initial value false
   effects_UNSTABLE: [
     ({ setSelf }) => {
       // Check token validity asynchronously
-      checkValidUser().then(isValid => {
-        setSelf(isValid); // Set validUser state based on the token's validity
+      checkValidUser().then(({isValid,userId,userName}) => {
+        setSelf({isValid,userId,userName}); // Set validUser state based on the token's validity
       });
     },
     persistAtom,

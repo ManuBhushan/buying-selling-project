@@ -32,7 +32,6 @@ export const LikedAds = () => {
                     Authorization: localStorage.getItem("token") || ''
                 }
             }).then(res=>{
-                console.log(res.data);
                 setLikedAds(res.data);
             }).catch(error=>{
                 console.log(error);

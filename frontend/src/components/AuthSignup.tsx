@@ -21,7 +21,7 @@ export const AuthSignup = () => {
         name,email,password
       })
       localStorage.setItem("token",res.data);
-      setUser(true);
+      setUser({isValid:true,userId:res.data.userId,userName: res.data.userName});
       navigate('/');
 
     }

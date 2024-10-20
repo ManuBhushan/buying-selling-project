@@ -4,7 +4,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { DATABASE_URL } from "../config";
 
-
+interface User{
+  name:String
+}
   interface Ads{
     category:string,
     description:string,
@@ -14,7 +16,8 @@ import { DATABASE_URL } from "../config";
     sold:boolean,
     title:string,
     userId:number,
-    createdAt:Date
+    createdAt:Date,
+    user:User
   }
 export const Ad=()=>{
 

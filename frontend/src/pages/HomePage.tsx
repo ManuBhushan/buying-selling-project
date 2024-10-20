@@ -7,7 +7,7 @@ export const HomePage = () => {
             {/* Flexbox for mobile, grid for larger screens */}
             <div className="lg:grid lg:grid-cols-[15%_85%] flex flex-col">
                 {/* Filter: hidden on small screens, visible on lg and above */}
-                <div className="hidden lg:block  border-r-2">
+                <div className="hidden lg:block min-h-screen  border-r-2">
                     <Filter />
                 </div>
                 {/* AllAds: takes full width on small screens, auto width on larger */}

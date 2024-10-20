@@ -12,6 +12,7 @@ const prisma=new PrismaClient();
 
 interface CustomRequest extends Request {
     userId?: { id: number };
+    userName?:{name:string};
   }
 
   adsRouter.use('/uploads', express.static(path.join(__dirname, '..', '..',config.DATABASE_URL)));
@@ -59,8 +60,6 @@ adsRouter.get("/search",async (req,res)=>{ //   URL=>{ ../search?sort={value} }
         // req.query.sort can be { string,string[] }
         const category= typeof req.query.category === 'string' ? req.query.category : 'others';
         const sort= typeof req.query.sort === 'string' ? req.query.sort : 'none';
-        console.log("c",category);
-        console.log("s",sort);
         if(category==="others" && sort==="none"){
             const ads= await prisma.ads.findMany({
                 where:{
@@ -174,8 +173,16 @@ adsRouter.get("/ad/:id",async (req,res)=>{
             const ad=await prisma.ads.findFirst({
                 where:{
                     id:Number(id)
-                }
+                },
+                  include:{
+                    user:{
+                        select:{
+                            name:true
+                        }
+                    }
+                  }
             })
+            console.log(ad);
             return res.send(ad);
         }
         catch(error){
@@ -190,14 +197,17 @@ adsRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
     try{
        
     const header=req.header("Authorization") || "";
-    const user=jwt.verify(header,config.JWT_SECRET) as { id: number };
+    const user=jwt.verify(header,config.JWT_SECRET) as { id: number, name:string } ;
     if(!user){
             return res.status(409).send("Invalid user");
     }
     else{       
+        console.log("USER: " ,user);
         const id:number=user.id;
-
+        const name:string =user.name;
         const userId={id};
+        const userName={name};
+        req.userName=userName;
         req.userId=userId;  
         next();
         }
@@ -207,6 +217,266 @@ adsRouter.use("/",(req: CustomRequest, res: Response, next: NextFunction)=>{
 
     }
 })
+
+
+adsRouter.get("/search/withlike",async (req:CustomRequest,res:Response)=>{ //   URL=>{ ../search/withlike?sort={value} }
+    try{
+        const userId = req.userId?.id;
+        // req.query.sort can be { string,string[] }
+        const category= typeof req.query.category === 'string' ? req.query.category : 'others';
+        const sort= typeof req.query.sort === 'string' ? req.query.sort : 'none';
+        if(category==="others" && sort==="none"){
+            const ads= await prisma.ads.findMany({
+                where:{
+                    sold:false,
+                },orderBy:{
+                    createdAt:'desc'
+                }
+               })  
+
+               const likedAds = await prisma.like.findMany({
+                where: {
+                  userId: userId,
+                },
+                select: {
+                  adId: true, // Get the ids of the liked ads
+                },
+              });
+          
+              // Create a Set of liked ad IDs for quick lookup
+              const likedAdIds = new Set(likedAds.map(like => like.adId));
+          
+              // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+              const adsWithLikeStatus = ads.map(ad => ({
+                ...ad,
+                liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+              }));
+          
+              return res.send(adsWithLikeStatus);   
+        }
+        else if(sort==="none"){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                    OR: [
+                        { category: {contains:category,mode:'insensitive' } },
+                        { title: { contains: category, mode: 'insensitive' } },
+                        { description: { contains: category, mode: 'insensitive' } }
+                    ]
+                }
+            });    
+            const likedAds = await prisma.like.findMany({
+                where: {
+                  userId: userId,
+                },
+                select: {
+                  adId: true, // Get the ids of the liked ads
+                },
+              });
+          
+              // Create a Set of liked ad IDs for quick lookup
+              const likedAdIds = new Set(likedAds.map(like => like.adId));
+          
+              // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+              const adsWithLikeStatus = ads.map(ad => ({
+                ...ad,
+                liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+              }));
+          
+              return res.send(adsWithLikeStatus);
+        }
+        else if(category==="others" && sort==="asc"){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                },orderBy:{
+                    price:"asc"
+                }
+            });    
+            const likedAds = await prisma.like.findMany({
+                where: {
+                  userId: userId,
+                },
+                select: {
+                  adId: true, // Get the ids of the liked ads
+                },
+              });
+          
+              // Create a Set of liked ad IDs for quick lookup
+              const likedAdIds = new Set(likedAds.map(like => like.adId));
+          
+              // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+              const adsWithLikeStatus = ads.map(ad => ({
+                ...ad,
+                liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+              }));
+          
+              return res.send(adsWithLikeStatus);
+        }
+        else if(category==="others" && sort==='desc'){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                },orderBy:{
+                    price:"desc"
+                }
+            });    
+            const likedAds = await prisma.like.findMany({
+                where: {
+                  userId: userId,
+                },
+                select: {
+                  adId: true, // Get the ids of the liked ads
+                },
+              });
+          
+              // Create a Set of liked ad IDs for quick lookup
+              const likedAdIds = new Set(likedAds.map(like => like.adId));
+          
+              // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+              const adsWithLikeStatus = ads.map(ad => ({
+                ...ad,
+                liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+              }));
+          
+              return res.send(adsWithLikeStatus);
+        }
+        else if(category==='others' && sort==='createdAt'){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                   
+                },orderBy:{
+                    createdAt:"asc"
+                }
+            });    
+            const likedAds = await prisma.like.findMany({
+                where: {
+                  userId: userId,
+                },
+                select: {
+                  adId: true, // Get the ids of the liked ads
+                },
+              });
+          
+              // Create a Set of liked ad IDs for quick lookup
+              const likedAdIds = new Set(likedAds.map(like => like.adId));
+          
+              // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+              const adsWithLikeStatus = ads.map(ad => ({
+                ...ad,
+                liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+              }));
+          
+              return res.send(adsWithLikeStatus);
+        }
+        else if(sort==="asc"){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                    OR: [
+                        { category: {contains:category,mode:'insensitive' } },
+                        { title: { contains: category, mode: 'insensitive' } },
+                        { description: { contains: category, mode: 'insensitive' } }
+                    ]
+                },orderBy:{
+                    price:"asc"
+                }
+            });    
+            const likedAds = await prisma.like.findMany({
+                where: {
+                  userId: userId,
+                },
+                select: {
+                  adId: true, // Get the ids of the liked ads
+                },
+              });
+          
+              // Create a Set of liked ad IDs for quick lookup
+              const likedAdIds = new Set(likedAds.map(like => like.adId));
+          
+              // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+              const adsWithLikeStatus = ads.map(ad => ({
+                ...ad,
+                liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+              }));
+          
+              return res.send(adsWithLikeStatus);
+        }
+        else if(sort==="desc"){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                    OR: [
+                        { category: {contains:category,mode:'insensitive' } },
+                        { title: { contains: category, mode: 'insensitive' } },
+                        { description: { contains: category, mode: 'insensitive' } }
+                    ]
+                },orderBy:{
+                    price:"desc"
+                }
+            });    
+            const likedAds = await prisma.like.findMany({
+                where: {
+                  userId: userId,
+                },
+                select: {
+                  adId: true, // Get the ids of the liked ads
+                },
+              });
+          
+              // Create a Set of liked ad IDs for quick lookup
+              const likedAdIds = new Set(likedAds.map(like => like.adId));
+          
+              // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+              const adsWithLikeStatus = ads.map(ad => ({
+                ...ad,
+                liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+              }));
+          
+              return res.send(adsWithLikeStatus);
+        }
+        else if(sort==='createdAt'){
+            const ads= await prisma.ads.findMany({
+                where: {
+                    sold: false,
+                    OR: [
+                        { category: {contains:category,mode:'insensitive' } },
+                        { title: { contains: category, mode: 'insensitive' } },
+                        { description: { contains: category, mode: 'insensitive' } }
+                    ]
+                },orderBy:{
+                    createdAt:"asc"
+                }
+            });  
+            const likedAds = await prisma.like.findMany({
+                where: {
+                  userId: userId,
+                },
+                select: {
+                  adId: true, // Get the ids of the liked ads
+                },
+              });
+          
+              // Create a Set of liked ad IDs for quick lookup
+              const likedAdIds = new Set(likedAds.map(like => like.adId));
+          
+              // Map over the ads and add a `liked` field based on whether the adId is in the likedAdIds set
+              const adsWithLikeStatus = ads.map(ad => ({
+                ...ad,
+                liked: likedAdIds.has(ad.id), // Set `liked` as true if the ad is liked, otherwise false
+              }));
+          
+              return res.send(adsWithLikeStatus);  
+        }
+    }
+
+    catch(error){
+        return res.status(411).send("Error while fetching ads by category");
+    }
+})
+
+
 adsRouter.get("/bulk/withlike", async (req: CustomRequest, res: Response) => {
     try {
       const userId = req.userId?.id;
@@ -246,8 +516,8 @@ adsRouter.get("/bulk/withlike", async (req: CustomRequest, res: Response) => {
     }
   });
   
-adsRouter.get('/',(req,res)=>{
-    return res.send("Valid user");
+adsRouter.get('/', (req: CustomRequest, res: Response) =>{
+    return res.send({validUser:true,userId:req.userId?.id,userName:req.userName?.name});
 })
 
     adsRouter.get("/own",async (req:CustomRequest,res:Response)=>{
