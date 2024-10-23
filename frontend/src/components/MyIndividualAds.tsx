@@ -2,6 +2,7 @@ import axios from "axios";
 import { DATABASE_URL } from "../config";
 import { useState } from "react";
 import { NotificationModel } from "./NotificationModel";
+import { Spinner } from "./Spinner";
 
 interface Ads {
   category: string;
@@ -15,11 +16,6 @@ interface Ads {
   createdAt: Date;
 }
 
-const Spinner = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-    <div className="border-t-4 border-b-4 border-blue-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
-  </div>
-);
 
 export const MyIndividualAds = ({ ad }: { ad: Ads | undefined }) => {
   const [s, setS] = useState<boolean>(ad?.sold || false);

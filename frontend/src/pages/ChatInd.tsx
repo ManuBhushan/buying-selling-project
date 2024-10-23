@@ -43,7 +43,7 @@ function ChatInd({ socket }: { socket: Socket | null }) {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`${DATABASE_URL}/api/v2/indiMessages`, {
+        const res = await axios.get(`${DATABASE_URL}/api/v2/message/indiMessages`, {
           params: {
             receiverId: ownerId,
             senderId: userId,
@@ -65,9 +65,6 @@ function ChatInd({ socket }: { socket: Socket | null }) {
   useEffect(() => {
     if (socket) {
       const handleMessage = (data: Conversation) => {
-        console.log("DATAPM: ",data);
-        
-        console.log("route location: ", location.pathname);
         const { senderId, message } = data;
         const newMessage: Conversation = {
           senderId,
@@ -75,9 +72,6 @@ function ChatInd({ socket }: { socket: Socket | null }) {
           id: Date.now(),
         };
         setAllMessages((prevMessages) => [...(prevMessages || []), newMessage]);
-
-        
-        console.log("Received message: ", message);
       };
 
       socket.on('private-message', handleMessage);
@@ -104,10 +98,9 @@ function ChatInd({ socket }: { socket: Socket | null }) {
     adId: number;
   }) => {
     if (socket) {
-      console.log("Sending message: ", message, senderId, receiverId);
       try {
         const res = await axios.post(
-          `${DATABASE_URL}/api/v2/message`,
+          `${DATABASE_URL}/api/v2/message/createChat`,
           { message, receiverId, senderId, adId },
           {
             headers: {
@@ -152,15 +145,15 @@ function ChatInd({ socket }: { socket: Socket | null }) {
   };
 
   return (
-    <div className='ml-20 mr-20 border-2 border-red-700 rounded-sm min-h-screen bg-slate-700'>
+    <div className=' rounded-sm min-h-screen bg-slate-700'>
       
 
       <div className='bg-slate-200 h-screen grid grid-rows-[auto_1fr_auto]'>
         {/* Header with title and price */}
-        <div className='bg-red-200 p-2 pr-5 pl-5 flex justify-between items-center'>
-          <div className='text-xl'>{senderName}</div>
-          <div className='text-xl'>{title}</div>
-          <div className='text-md'>₹{price}</div>
+        <div className='bg-blue-600 p-2 pr-5 pl-5 flex justify-between items-center'>
+          <div className='text-xl text-white'>{senderName}</div>
+          <div className='text-xl text-white'>{title}</div>
+          <div className='text-md text-white'>₹{price}</div>
         </div>
 
         {/* Messages div */}
@@ -169,11 +162,11 @@ function ChatInd({ socket }: { socket: Socket | null }) {
             allMessages.map((m) => (
               <div key={m.id.toString()} className='flex flex-col'>
                 {m.senderId === userId ? (
-                  <div className='m-5 pl-40 pr-2 border-2 rounded border-black ml-auto'>
+                  <div className='m-5 border-2 border-black ml-auto rounded pl-2 pr-2'>
                     {m.message}
                   </div>
                 ) : (
-                  <div className='m-5 border-2 border-black'>{m.message}</div>
+                  <div className='m-5 border-black border-2  rounded '>{m.message}</div>
                 )}
               </div>
             ))

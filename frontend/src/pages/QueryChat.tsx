@@ -28,7 +28,7 @@ function QueryChat() {
         const fun=async ()=>{
             try {
 
-                const res=await axios.get(`${DATABASE_URL}/api/v2/saleQuery/`,{
+                const res=await axios.get(`${DATABASE_URL}/api/v2/message/saleQuery`,{
                    params:{
                     ownerId:userId
                    }, headers:{
@@ -52,51 +52,48 @@ function QueryChat() {
     <>
     
         
-            <div className=' ml-20 mr-20 border-2  border-red-700  rounded-sm min-h-screen  bg-slate-700 '>
+    <div className='bg-zinc-600 rounded-sm min-h-screen'>
     
-                <div className='border-r-2 border-red-700 '>
             
-                    <div className='bg-red-200 text-xl p-2	 '>
-                        INBOX
-                    </div> 
+    <div className=' text-xl p-2 text-white	bg-blue-600   '>
+        All Queries
+    </div> 
 
-                    <div className='text-white mt-5 '>
-                      {
-                        chat?.length ? (
-                            
-                            chat.map((ch)=>(
-                                <div className=' flex items-center justify-between  border-white border-2  flex justify-between items-center mb-2'key={ch.ad.id.toString()+ch.sender.id.toString()} > 
-                                     <Link to={`/ad/${ch.ad.id}`}  className='flex flex-grow justify-between   p-2   border-r-2 border-black'>
-                                    
-                                    <div>
-                                      <span className='text-red-700'> Sender Name:</span> {ch.sender.name}
-                                    </div>
-                                    <div>
-                                    <span className='text-red-700'>   Title:</span> {ch.ad.title ? ch.ad.title :"No title given"}
-                                    </div>
-                                    <div>
-                                    <span className='text-red-700'>  Price:</span> {ch.ad.price.toString()}
-                                    </div>
-
-                                    </Link>
-
-                                    <Link  to={`/chat/${ch.ad.id}`}state={{title:ch.ad.title , price:ch.ad.price , ownerId:ch.sender.id ,senderName:ch.sender.name}} className="pl-2 pr-2" >
-                                        <IoMdChatboxes  size={30}/>
-                                   </Link>
-                                </div>
-                              
-                               
-                            ))
-                        
-                        )
-                        :
-                        (<>No Query Related to any Listed Product</>) 
-                      }
+    <div className='text-white mt-5 bg-zinc-600 '>
+      {
+        chat?.length ? (
+            
+            chat.map((ch)=>(
+                <div className=' border-white border-2  flex justify-between items-center mb-2'key={ch.ad.id.toString()} > 
+                     <Link to={`/ad/${ch.ad.id}`}  className='flex flex-grow justify-between  p-2   border-r-2 border-black'>
+                     <div>
+                    <span className='text-red-700'> Name: </span> {ch.sender.name.toString()}
                     </div>
-            
+                    <div>
+                      <span className='text-red-700'> Title:</span> {ch.ad.title ? ch.ad.title :"No title given"}
+                     </div>
+                    <div>
+                    <span className='text-red-700'> Price: </span> {ch.ad.price.toString()}
+                    </div>
+                    
+
+                    </Link>
+
+                    <Link  to={`/chat/${ch.ad.id}`}state={{title:ch.ad.title , price:ch.ad.price , ownerId:ch.sender.id, senderName:ch.sender.name}} className="pl-2 pr-2" >
+                        <IoMdChatboxes  size={30}/>
+                   </Link>
                 </div>
+              
                
-          </div>
+            ))
+        
+        )
+        
+        :(<></>) 
+      }
+    </div>
+
+</div>
     
     
     </>

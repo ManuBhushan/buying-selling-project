@@ -47,7 +47,6 @@ export const Header=()=>{
                 try {
                         if(!user.isValid){
                                 const res=await axios.get(`${DATABASE_URL}/api/v1/ads/search?category=${value}`)
-                                console.log(res.data);
                                 setAds(res.data);
                         }
                         else{
@@ -56,7 +55,6 @@ export const Header=()=>{
                                                 Authorization: localStorage.getItem("token") || ""
                                         }
                                 })
-                                console.log(res.data);
                                 setAds(res.data);
                         }
 
@@ -72,7 +70,7 @@ export const Header=()=>{
 
 return (  
            <div className="flex justify-around items-center  bg-zinc-400  ">
-                        <Link to="/" className="ml-10 text-2xl font-bold text-slate-700 hover:text-sl-800 hover:text-slate-800 ">
+                        <Link to="/" className="text-2xl font-bold text-slate-700 hover:text-sl-800 hover:text-slate-800 ">
                         LOGO
                         </Link>
 
@@ -91,20 +89,20 @@ return (
                         </div>
                         </form>
 
-                       {user.isValid?(<div className="flex justify-between items-center mr-10">
+                       {user.isValid?(<div className="flex justify-between items-center">
                                
-                                <Link to='/chat' className="mr-10"> 
+                                <Link to='/chat'> 
                                         <BsChat size={30}  title="Chat"/>
                                 </Link>  
 
-                                <Link to='/query' className="mr-10">
+                                <Link to='/query'>
                                 <IoNotifications  size={30} title="Queries"/>
                                 </Link>
 
                                 <UserDropdown/>
 
                                 <button onClick={logout} className=" text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 
-                                focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center  mt-2 mb-2 mr-5">Logout</button> 
+                                focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center  mt-2 mb-2 ">Logout</button> 
                                 
   
                         </div>):

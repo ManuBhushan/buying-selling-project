@@ -2,6 +2,7 @@ import axios from "axios";
 import {  useState } from "react";
 import { DATABASE_URL } from "../config";
 import { NotificationModel } from "../components/NotificationModel";
+import { Spinner } from "../components/Spinner";
 
 interface AdForm {
   category: string;
@@ -10,12 +11,6 @@ interface AdForm {
   description: string;
   file: File| null;
 }
-
-const Spinner = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-    <div className="border-t-4 border-b-4 border-blue-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
-  </div>
-);
 
 export const AddItem = () => {
 

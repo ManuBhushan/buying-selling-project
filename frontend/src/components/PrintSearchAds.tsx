@@ -6,12 +6,8 @@ import { NotificationModel } from "./NotificationModel";
 import { useState } from "react";
 import axios from "axios";
 import { DATABASE_URL } from "../config";
+import { Spinner } from "./Spinner";
 
-const Spinner = () => (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-      <div className="border-t-4 border-b-4 border-blue-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
-    </div>
-  );
 export const PrintSearchAds= () => {
     // const location = useLocation();
         const ads=useRecoilValue(customAds);

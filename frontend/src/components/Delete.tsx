@@ -3,15 +3,12 @@ import {  useState } from "react";
 import { DATABASE_URL } from "../config";
 import { NotificationModel } from "../components/NotificationModel";
 import {  useNavigate } from "react-router-dom";
-import { useRecoilState, useResetRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { validUser } from "../hooks/CustomAds";
+import {Spinner} from "./Spinner";
 
 
-const Spinner = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-    <div className="border-t-4 border-b-4 border-blue-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
-  </div>
-);
+
 
 export const Delete = () => {
 
@@ -40,7 +37,7 @@ export const Delete = () => {
         setNotification({ message: 'Account Deleted Successfully!', type: 'success' });
         setUpadatePassword("");
         localStorage.removeItem("token");
-        setUser(false);
+        setUser({isValid:false,userId:0,userName:"Invalid User"});
         setLoading(false);
         setTimeout(()=>{
         navigate('/');
@@ -56,7 +53,7 @@ export const Delete = () => {
 
   return (
     <div>
-      {loading && <Spinner />}
+      {loading && <Spinner/>}
       {notification && (
         <NotificationModel
           message={notification.message}

@@ -20,8 +20,8 @@ export const AuthSignup = () => {
       const res=await axios.post(`${DATABASE_URL}/api/v1/user/signup`,{
         name,email,password
       })
-      localStorage.setItem("token",res.data);
       setUser({isValid:true,userId:res.data.userId,userName: res.data.userName});
+      localStorage.setItem("token",res.data.token);
       navigate('/');
 
     }

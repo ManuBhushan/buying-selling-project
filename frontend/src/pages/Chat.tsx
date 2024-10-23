@@ -32,7 +32,7 @@ function Chat() {
         const fun=async ()=>{
             try {
 
-                const res=await axios.get(`${DATABASE_URL}/api/v2/messages/${userId}`,{
+                const res=await axios.get(`${DATABASE_URL}/api/v2/message/${userId}`,{
                     headers:{
                         Authorization: localStorage.getItem("token") || ""
                     }
@@ -50,31 +50,32 @@ function Chat() {
     },[])
 
 
-  return (
-    <>
-    
+  return (    
         
-            <div className='grid grid-cols-1 lg:grid-cols-[40%_60%] ml-20 mr-20 border-2  border-red-700  rounded-sm min-h-screen  bg-slate-700 '>
+            <div className='bg-zinc-600 rounded-sm min-h-screen'>
     
-                <div className='border-r-2 border-red-700 lg:block hidden'>
             
-                    <div className='bg-red-200 text-xl p-2	 '>
-                        INBOX
+                    <div className=' text-xl p-2 text-white	bg-blue-600   '>
+                        All your Chat
                     </div> 
 
-                    <div className='text-white mt-5 '>
+                    <div className='text-white mt-5 bg-zinc-600 '>
                       {
                         chat?.length ? (
                             
                             chat.map((ch)=>(
                                 <div className=' border-white border-2  flex justify-between items-center mb-2'key={ch.adId.toString()} > 
-                                     <Link to={`/ad/${ch.adId}`}  className='flex flex-grow justify-between   p-2   border-r-2 border-black'>
+                                     <Link to={`/ad/${ch.adId}`}  className='flex flex-grow justify-between  p-2   border-r-2 border-black'>
                                      <div>
-                                       Title: {ch.ad.title ? ch.ad.title :"No title given"}
+                                    <span className='text-red-700'> Name: </span> {ch.ad.user.name.toString()}
+                                    </div>
+                                    <div>
+                                      <span className='text-red-700'> Title:</span> {ch.ad.title ? ch.ad.title :"No title given"}
                                      </div>
                                     <div>
-                                        Price: {ch.ad.price.toString()}
+                                    <span className='text-red-700'> Price: </span> {ch.ad.price.toString()}
                                     </div>
+                                    
 
                                     </Link>
 
@@ -88,24 +89,13 @@ function Chat() {
                         
                         )
                         
-                        
-                        
-                        
-                        
-                        
                         :(<></>) 
                       }
                     </div>
             
                 </div>
-                <div className='bg-red-200 text-xl p-2	 '>
-                        SEcond
-                    </div> 
-          </div>
-    
-    
-    </>
-  )
+             
+)
 }
 
 export default Chat

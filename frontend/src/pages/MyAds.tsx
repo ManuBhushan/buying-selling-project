@@ -26,7 +26,6 @@ export const MyAds = () => {
                 }
             }).then(res=>{
                 setMyAds(res.data);
-            console.log(res.data);
             }).catch(error=>{
                 console.log(error);
             })

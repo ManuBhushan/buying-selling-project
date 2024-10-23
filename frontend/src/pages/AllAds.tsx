@@ -6,6 +6,7 @@ import { useRecoilValue } from "recoil";
 import {   validUser } from "../hooks/CustomAds";
 import { NotificationModel } from "../components/NotificationModel";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import { Spinner } from "../components/Spinner";
 
 interface Ads {
     category: string;
@@ -20,12 +21,6 @@ interface Ads {
     liked:boolean;
 }
 
-const Spinner = () => (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-      <div className="border-t-4 border-b-4 border-blue-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
-    </div>
-  );
-  
 export const AllAds = () => {
     const [allads, setAllAds] = useState<Ads[]>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -88,7 +83,6 @@ export const AllAds = () => {
                 }
             })
                 .then(res => {
-                    console.log(res.data);
                     setAllAds(res.data);
                 })
                 .catch(error => {
@@ -112,7 +106,7 @@ export const AllAds = () => {
     return (
         <>
         <div className="p-4 grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" }}>
-                {loading && <Spinner />}
+                {loading && <Spinner/>}
                 {notification && (
                     <NotificationModel
                         message={notification.message}

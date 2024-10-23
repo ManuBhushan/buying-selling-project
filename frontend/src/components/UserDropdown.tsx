@@ -10,7 +10,7 @@ export const  UserDropdown=()=> {
     <div>
             <MenuButton 
             className=" inline-flex text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 
-                                    focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mt-2 mb-2 mr-5">
+                                    focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mt-2 mb-2 ">
             Options
             <ChevronDownIcon aria-hidden="true" className="-mr-1 h-5 w-5 text-gray-400" />
             </MenuButton>

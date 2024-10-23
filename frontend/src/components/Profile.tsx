@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { DATABASE_URL } from "../config";
 import { NotificationModel } from "../components/NotificationModel";
+import { Spinner } from "./Spinner";
 
 interface UserProfile {
   name: string;
@@ -14,12 +15,6 @@ interface UpdateInfo {
   name: string;
   email: string;
 }
-
-const Spinner = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-    <div className="border-t-4 border-b-4 border-blue-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
-  </div>
-);
 
 export const Profile: React.FC = () => {
 
@@ -59,7 +54,6 @@ export const Profile: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    console.log(formData);
     axios
       .post(`${DATABASE_URL}/api/v1/user/update-profile`, formData, {
         headers: {
