@@ -14,37 +14,42 @@ interface Ads {
   title: string;
   userId: number;
   createdAt: Date;
-  liked:boolean;
+  liked: boolean;
 }
 
 interface MyIndividualAdsProps {
+  ad: Ads;
+  id: number;
+}
 
-    ad: Ads;
-    id:number
-
-    }   
-
-
-export const MyLikedAds = ({ adItem }:{adItem:MyIndividualAdsProps}) => {
-
-    const [loading, setLoading] = useState<boolean>(false);
-    const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
-
+export const MyLikedAds = ({
+  adItem,
+  onUnlike,
+}: {
+  adItem: MyIndividualAdsProps;
+  onUnlike: (id: number) => void;
+}) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const handelUnlike = async () => {
-
     setLoading(true);
     try {
-        console.log(adItem.id);
-      await axios.delete(`${DATABASE_URL}/api/v1/unlike/${adItem.ad.id}`, {
+      await axios.delete(`${DATABASE_URL}/api/v1/ads/unlike/${adItem.ad.id}`, {
         headers: {
-          Authorization: localStorage.getItem("token")
-        }
+          Authorization: localStorage.getItem("token"),
+        },
       });
-      setNotification({ message: 'Ad unliked successfully!', type: 'success' });
-      setTimeout(() => window.location.reload(), 1000);
-    } catch (error) {
-      setNotification({ message: 'Error while unliking Ad', type: 'error' });
+      setNotification({ message: "Ad unliked successfully!", type: "success" });
+
+      // Remove ad from list in parent
+      onUnlike(adItem.ad.id);
+    } catch (error: any) {
+      console.log(error.message);
+      setNotification({ message: "Error while unliking Ad", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -52,49 +57,50 @@ export const MyLikedAds = ({ adItem }:{adItem:MyIndividualAdsProps}) => {
 
   return (
     <div>
-         {loading && <Spinner/>}
+      {loading && <Spinner />}
       {notification && (
         <NotificationModel
           message={notification.message}
           onClose={() => setNotification(null)}
         />
       )}
-     
-      <div className="flex justify-center">
-        <div className="w-full max-w-screen-xl px-4 pt-2 pb-10 border-2 rounded-lg mt-5 mb-5 bg-slate-200 overflow-hidden">
-          <div className="flex items-center mb-4">
-            <div>
-              <div className="text-slate-500 pt-2">
-                Created at: {adItem.ad?.createdAt.toLocaleString()}
-              </div>
-              <div className="text-xl font-bold">
-                Category: {adItem.ad?.category?.toUpperCase()}
-              </div>
-              <img
-                src={`http://localhost:3000/${adItem.ad?.imageLink.split('src/')[1]}`}
-                alt="image"
-                className="max-w-full h-auto max-h-80 object-contain"
-              />
-            </div>
-          </div>
-          <div className="text-4xl font-extrabold pt-4">
-            Title: {adItem.ad?.title?.toUpperCase()}
-          </div>
-          <div className="text-xl font-md pt-2">
-            {adItem.ad?.description?.toLowerCase()}
-          </div>
-          <div className="pt-4 break-words text-2xl font-bold">
-            Price: {adItem.ad?.price}
-          </div>
 
-          <div>
-            <button
-              onClick={handelUnlike}
-              className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4
-              focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mt-2 mb-2 mr-5"
-            >
-              Unlike Ad
-            </button>
+      <div className="flex justify-center px-4">
+        <div
+          className="w-full max-w-4xl border dark:border-gray-700 rounded-2xl shadow-md 
+          p-6 mb-6 bg-white dark:bg-gray-800 transition-all duration-300"
+        >
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+            <img
+              src={`http://localhost:3000/${adItem.ad.imageLink.split("src/")[1]}`}
+              alt="ad"
+              className="w-full md:w-72 h-52 object-contain bg-white border rounded-lg dark:bg-gray-900"
+            />
+            <div className="flex flex-col flex-1">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                Created at: {new Date(adItem.ad.createdAt).toLocaleString()}
+              </div>
+              <div className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
+                Category:{" "}
+                <span className="uppercase">{adItem.ad.category}</span>
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                {adItem.ad.title.toUpperCase()}
+              </div>
+              <div className="text-gray-700 dark:text-gray-300 mb-4">
+                {adItem.ad.description}
+              </div>
+              <div className="text-xl font-semibold text-green-700 dark:text-green-400 mb-4">
+                ₹ {adItem.ad.price}
+              </div>
+              <button
+                onClick={handelUnlike}
+                className="self-start text-white bg-red-600 hover:bg-red-700 focus:ring-4 
+                focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-full text-sm px-5 py-2.5"
+              >
+                Unlike Ad
+              </button>
+            </div>
           </div>
         </div>
       </div>

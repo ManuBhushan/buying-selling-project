@@ -1,199 +1,176 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { category, customAds } from '../hooks/CustomAds';
-import { DATABASE_URL } from '../config';
-import axios from 'axios';
-
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { category, customAds, validUser } from "../hooks/CustomAds";
+import { DATABASE_URL } from "../config";
+import axios from "axios";
+import {
+  ChevronDown,
+  TagIcon,
+  SlidersHorizontal,
+  ArrowDownAZ,
+  ArrowUpZA,
+  Calendar,
+} from "lucide-react";
 
 export const Filter: React.FC = () => {
+  const navigate = useNavigate();
+  const setAds = useSetRecoilState(customAds);
+  const [cat, setCat] = useRecoilState(category);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const isValid = useRecoilValue(validUser).isValid;
 
-  const navigate= useNavigate();
-  const setAds=useSetRecoilState(customAds);
-  
-  const [cat,setCat]=useRecoilState(category);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpen2, setIsOpen2] = useState(false);
+  const categoryData = [
+    { id: "Electronic", label: "Electronics", icon: "💻" },
+    { id: "Mobile", label: "Mobiles", icon: "📱" },
+    { id: "Laptop", label: "Laptops", icon: "💻" },
+    { id: "Earphone", label: "Earphones", icon: "🎧" },
+    { id: "Sport", label: "Sports", icon: "🏆" },
+    { id: "Cycle", label: "Cycles", icon: "🚲" },
+    { id: "Cooler", label: "Coolers", icon: "❄️" },
+  ];
 
+  const sortData = [
+    {
+      id: "desc",
+      label: "Price: High to Low",
+      icon: <ArrowDownAZ size={16} />,
+    },
+    { id: "asc", label: "Price: Low to High", icon: <ArrowUpZA size={16} /> },
+    { id: "createdAt", label: "Date Published", icon: <Calendar size={16} /> },
+  ];
 
-  const handleButtonClick = () => {
-    setIsOpen((prev) => !prev);
-  };
-
-  const handleButtonClick2 = () => {
-    setIsOpen2((prev) => !prev);
-  };
-
-  const handleSubmit = async(category: string) => {
+  const handleCategorySelect = async (categoryId: string) => {
     try {
-      setIsOpen((c)=>!c);
-      setCat(category);
-      const res=await axios.get(`${DATABASE_URL}/api/v1/ads/search?category=${category  }`)
+      setCategoryOpen(false);
+      setCat(categoryId);
+
+      let res;
+      if (!isValid) {
+        res = await axios.get(
+          `${DATABASE_URL}/api/v1/ads/search?category=${categoryId}`,
+        );
+      } else {
+        res = await axios.get(
+          `${DATABASE_URL}/api/v1/ads/search/withlike?category=${categoryId}`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token") || "",
+            },
+          },
+        );
+      }
+
       setAds(res.data);
-      navigate(`/search?category=${category}`);
-
-  } catch (error) {
-        console.log(error);
-  }
-
-  };
-
-  const handleSubmit2 = async(sort: string) => {
-    try {
-      setIsOpen2((c)=>!c);
-      const res=await axios.get(`${DATABASE_URL}/api/v1/ads/search?category=${cat}&sort=${sort}`)
-      setAds(res.data);
-      navigate(`/search?category=${cat}&sort=${sort}`);
-
-} catch (error) {
+      navigate(`/search?category=${categoryId}`);
+    } catch (error) {
       console.log(error);
-}
-
+    }
   };
 
-  
-  return (
-    <div className="p-4">
-      {/* Categories Button */}
-      <div className="mt-4">
-        <button
-          id="dropdownCategoriesButton"
-          onClick={handleButtonClick}
-          className="text-white bg-blue-700 w-full lg:w-auto hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md px-6 py-3 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          type="button"
-        >
-          All Categories
-          <svg
-            className="w-3 h-3 ms-3"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 10 6"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M1 1l4 4 4-4"
-            />
-          </svg>
-        </button>
+  const handleSortSelect = async (sortId: string) => {
+    try {
+      setSortOpen(false);
 
-        {/* Dropdown Menu for Categories */}
-        <div
-          id="dropdownCategories"
-          className={`z-10 ${isOpen ? 'block' : 'hidden'} bg-white divide-y divide-gray-100 rounded-lg shadow w-full lg:w-50 dark:bg-gray-700`}
-        >
-          <ul className="py-2 text-md text-gray-700 dark:text-gray-200">
-            <li>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit('Electronic')}
-              >
-                Electronics
-              </button>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit('Mobile')}
-              >
-                Mobiles
-              </button>
-            </li>
-            <li>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit('Laptop')}
-              >
-                Laptops
-              </button>
-            </li>
-            <li>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit('Earphone')}
-              >
-                Earphones
-              </button>
-            </li>
-            <li>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit('Sport')}
-              >
-                Sports
-              </button>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit('Cycle')}
-              >
-                Cycle
-              </button>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit('Cooler')}
-              >
-                Cooler
-              </button>
-            </li>
-          </ul>
+      const res = await axios.get(
+        `${DATABASE_URL}/api/v1/ads/search?category=${cat}&sort=${sortId}`,
+      );
+      setAds(res.data);
+      navigate(`/search?category=${cat}&sort=${sortId}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="p-4 space-y-6 text-gray-800 dark:text-white h-screen">
+      {/* Filter title */}
+      <div className="flex items-center gap-2 font-medium border-b border-gray-200 dark:border-gray-700 pb-3">
+        <SlidersHorizontal size={20} />
+        <h2 className="text-lg">Filter Products</h2>
+      </div>
+
+      {/* Categories Section */}
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+          Categories
+        </h3>
+
+        <div className="relative">
+          <button
+            onClick={() => setCategoryOpen(!categoryOpen)}
+            className="w-full flex items-center justify-between gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <TagIcon size={18} className="text-blue-600" />
+              <span>
+                {categoryData.find((c) => c.id === cat)?.label ||
+                  "All Categories"}
+              </span>
+            </div>
+            <ChevronDown
+              size={18}
+              className={`text-gray-500 dark:text-gray-300 transition-transform ${categoryOpen ? "transform rotate-180" : ""}`}
+            />
+          </button>
+
+          {categoryOpen && (
+            <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden">
+              <div className="max-h-64 overflow-y-auto py-1">
+                {categoryData.map((category) => (
+                  <button
+                    key={category.id}
+                    className="flex items-center gap-3 w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    onClick={() => handleCategorySelect(category.id)}
+                  >
+                    <span className="text-lg">{category.icon}</span>
+                    <span>{category.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Filters Button */}
-      <div className="mt-4">
-        <button
-          id="dropdownFiltersButton"
-          onClick={handleButtonClick2}
-          className="text-white bg-blue-700 w-full lg:w-auto hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md px-6 py-3 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          type="button"
-        >
-          Filters
-          <svg
-            className="w-3 h-3 ms-3"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 10 6"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M1 1l4 4 4-4"
-            />
-          </svg>
-        </button>
+      {/* Sort Section */}
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+          Sort By
+        </h3>
 
-        {/* Dropdown Menu for Filters */}
-        <div
-          id="dropdownFilters"
-          className={`z-10 ${isOpen2 ? 'block' : 'hidden'} bg-white divide-y divide-gray-100 rounded-lg shadow w-full lg:w-50 dark:bg-gray-700`}
-        >
-          <ul className="py-2 text-md text-gray-700 dark:text-gray-200">
-            <li>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit2('desc')}
-              >
-                High to Low
-              </button>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit2('asc')}
-              >
-                Low to High
-              </button>
-              <button
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                onClick={() => handleSubmit2('createdAt')}
-              >
-                Date Published
-              </button>
-            </li>
-          </ul>
+        <div className="relative">
+          <button
+            onClick={() => setSortOpen(!sortOpen)}
+            className="w-full flex items-center justify-between gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal size={18} className="text-blue-600" />
+              <span>Sort Options</span>
+            </div>
+            <ChevronDown
+              size={18}
+              className={`text-gray-500 dark:text-gray-300 transition-transform ${sortOpen ? "transform rotate-180" : ""}`}
+            />
+          </button>
+
+          {sortOpen && (
+            <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden">
+              <div className="py-1">
+                {sortData.map((sort) => (
+                  <button
+                    key={sort.id}
+                    className="flex items-center gap-3 w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    onClick={() => handleSortSelect(sort.id)}
+                  >
+                    <span className="text-blue-600">{sort.icon}</span>
+                    <span>{sort.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

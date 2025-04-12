@@ -1,11 +1,12 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { IoSend } from 'react-icons/io5';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { DATABASE_URL } from '../config';
-import { useRecoilValue } from 'recoil';
-import { validUser } from '../hooks/CustomAds';
-import { Socket } from 'socket.io-client';
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { Send } from "lucide-react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { DATABASE_URL } from "../config";
+import { useRecoilValue } from "recoil";
+import { validUser } from "../hooks/CustomAds";
+import { Socket } from "socket.io-client";
+import { Spinner } from "../components/Spinner";
 
 interface Conversation {
   senderId: number;
@@ -15,77 +16,72 @@ interface Conversation {
 
 function ChatInd({ socket }: { socket: Socket | null }) {
   const location = useLocation();
-  const { id } = useParams(); // adId 
-  let { title, price, ownerId,senderName } = location.state || {}; // ownerId is the userId of the ad owner
+  const { id } = useParams(); // adId
+  const { price, ownerId, senderName } = location.state || {};
+  let { title } = location.state;
   if (!title) title = "No title given";
   const navigate = useNavigate();
   const user = useRecoilValue(validUser);
   const login = user.isValid;
-  const userId = user.userId; // the user currently sending the message
-  const userName=user.userName;
+  const userId = user.userId;
+  const userName = user.userName;
   const [message, setMessage] = useState<string>("");
   const [allMessages, setAllMessages] = useState<Conversation[]>([]);
-
+  const [loading, setLoading] = useState<boolean>(true);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Scroll to bottom on new messages
   const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [allMessages]);
 
-  // Fetch initial messages
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`${DATABASE_URL}/api/v2/message/indiMessages`, {
-          params: {
-            receiverId: ownerId,
-            senderId: userId,
-            adId: Number(id),
+        const res = await axios.get(
+          `${DATABASE_URL}/api/v2/message/indiMessages`,
+          {
+            params: {
+              receiverId: ownerId,
+              senderId: userId,
+              adId: Number(id),
+            },
+            headers: {
+              Authorization: localStorage.getItem("token") || "",
+            },
           },
-          headers: {
-            Authorization: localStorage.getItem('token') || '',
-          },
-        });
+        );
         setAllMessages(res.data);
       } catch (error) {
         console.error("Error fetching messages", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMessages();
   }, [ownerId, userId, id]);
 
-  // Listen for new messages through WebSocket
   useEffect(() => {
     if (socket) {
       const handleMessage = (data: Conversation) => {
-        const { senderId, message } = data;
         const newMessage: Conversation = {
-          senderId,
-          message,
+          senderId: data.senderId,
+          message: data.message,
           id: Date.now(),
         };
-        setAllMessages((prevMessages) => [...(prevMessages || []), newMessage]);
+        setAllMessages((prev) => [...prev, newMessage]);
       };
 
-      socket.on('private-message', handleMessage);
-
-      // Clean up the listener when the component unmounts
+      socket.on("private-message", handleMessage);
       return () => {
-        socket.off('private-message', handleMessage);
+        socket.off("private-message", handleMessage);
       };
     }
   }, [socket]);
 
-
-
-  // Function to send private message
   const sendPrivateMessage = async ({
     message,
     receiverId,
@@ -97,98 +93,128 @@ function ChatInd({ socket }: { socket: Socket | null }) {
     senderId: number;
     adId: number;
   }) => {
-    if (socket) {
-      try {
-        const res = await axios.post(
-          `${DATABASE_URL}/api/v2/message/createChat`,
-          { message, receiverId, senderId, adId },
-          {
-            headers: {
-              Authorization: localStorage.getItem('token') || '',
-            },
-          }
-        );
-
-        socket.emit('private-message', { message, receiverId, adId, senderId ,senderName:userName,title});
-      } catch (error) {
-        console.error("Error sending message", error);
-      }
-    } else {
-      console.log("Socket is not connected.");
+    if (!socket) return console.log("Socket not connected");
+    try {
+      await axios.post(
+        `${DATABASE_URL}/api/v2/message/createChat`,
+        { message, receiverId, senderId, adId },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+          },
+        },
+      );
+      socket.emit("private-message", {
+        message,
+        receiverId,
+        adId,
+        senderId,
+        senderName: userName,
+        title,
+      });
+    } catch (err) {
+      console.error("Error sending message", err);
     }
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!login) {
-      navigate('/signin');
+    if (!login) return navigate("/signin");
+
+    if (ownerId === userId) {
+      alert("You cannot send message to yourself");
       return;
     }
 
     const newMessage: Conversation = {
       senderId: userId,
-      message: message,
-      id: Date.now(), // Use a unique ID; in a real app, you might get this from the server
+      message,
+      id: Date.now(),
     };
 
-    // Update state with the new message
-    setAllMessages((prevMessages) => [...(prevMessages || []), newMessage]);
-
-    // Send the message via WebSocket
-    if(ownerId===userId){
-        alert('You cannot send message to yourself');
-    }
-    else{
-    sendPrivateMessage({ message, receiverId: ownerId , senderId: userId, adId: Number(id) });
-}
-    setMessage(""); // Clear the input
+    setAllMessages((prev) => [...prev, newMessage]);
+    sendPrivateMessage({
+      message,
+      receiverId: ownerId,
+      senderId: userId,
+      adId: Number(id),
+    });
+    setMessage("");
   };
 
   return (
-    <div className=' rounded-sm min-h-screen bg-slate-700'>
-      
+    <div className="h-[calc(100vh-64px)] flex flex-col bg-zinc-900 text-white overflow-hidden">
+      {/* Chat Header - Fixed at top */}
+      <div className="bg-zinc-800 px-5 py-3 flex justify-between items-center border-b border-zinc-700 shadow-md">
+        <div className="text-lg font-semibold">{senderName}</div>
+        <div className="text-base text-zinc-400 truncate max-w-xs">{title}</div>
+        <div className="text-sm text-green-400">₹{price}</div>
+      </div>
 
-      <div className='bg-slate-200 h-screen grid grid-rows-[auto_1fr_auto]'>
-        {/* Header with title and price */}
-        <div className='bg-blue-600 p-2 pr-5 pl-5 flex justify-between items-center'>
-          <div className='text-xl text-white'>{senderName}</div>
-          <div className='text-xl text-white'>{title}</div>
-          <div className='text-md text-white'>₹{price}</div>
-        </div>
+      {/* Messages - Scrollable container with fixed height */}
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2 bg-zinc-900">
+        {loading ? (
+          <div className="flex items-center justify-center h-full">
+            <Spinner />
+          </div>
+        ) : allMessages.length > 0 ? (
+          allMessages.map((m) => (
+            <div
+              key={m.id}
+              className={`max-w-[70%] px-4 py-2 rounded-xl ${
+                m.senderId === userId
+                  ? "ml-auto bg-blue-600 text-white"
+                  : "mr-auto bg-zinc-700 text-white"
+              }`}
+            >
+              {m.message}
+            </div>
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full text-zinc-400">
+            <div className="bg-zinc-800 p-4 rounded-xl flex flex-col items-center shadow-md border border-zinc-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-zinc-500 mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4.248-.948l-4.126.842.842-4.126A8.964 8.964 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              <p className="text-lg font-semibold mb-1">Start a conversation</p>
+              <p className="text-sm text-zinc-500 text-center">
+                Your messages will appear here. Say hello to get things started!
+              </p>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-        {/* Messages div */}
-        <div className='flex-grow overflow-y-auto text-lg p-2'>
-          {allMessages?.length ? (
-            allMessages.map((m) => (
-              <div key={m.id.toString()} className='flex flex-col'>
-                {m.senderId === userId ? (
-                  <div className='m-5 border-2 border-black ml-auto rounded pl-2 pr-2'>
-                    {m.message}
-                  </div>
-                ) : (
-                  <div className='m-5 border-black border-2  rounded '>{m.message}</div>
-                )}
-              </div>
-            ))
-          ) : (
-            <div>Start a Conversation...</div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input form */}
-        <div>
-          <form onSubmit={handleSubmit} className='flex justify-between items-center'>
-            <input
-              type='text'
-              className='h-10 w-full bg-slate-200 rounded pl-2 mr-1 ml-1 text-lg'
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder='Enter text...'
-            />
-            <IoSend type='submit' size={25} />
-          </form>
-        </div>
+      {/* Input - Fixed at bottom */}
+      <div className="bg-zinc-800 px-3 py-3 border-t border-zinc-700">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          <input
+            type="text"
+            className="flex-1 bg-zinc-700 text-white placeholder-zinc-400 px-4 py-2 rounded-full outline-none"
+            placeholder="Type your message..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <button
+            type="submit"
+            disabled={!message.trim()}
+            className="p-2 rounded-full bg-zinc-700 hover:bg-zinc-600 transition text-blue-500 disabled:opacity-50 disabled:hover:bg-zinc-700"
+          >
+            <Send size={22} />
+          </button>
+        </form>
       </div>
     </div>
   );
