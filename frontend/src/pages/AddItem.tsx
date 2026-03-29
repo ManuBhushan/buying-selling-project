@@ -38,56 +38,86 @@ export const AddItem = () => {
         ...prevData,
         [name]: value,
       }));
+      
     }
   };
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+const CLOUDINARY_URL = import.meta.env.CLOUDINARY_URL;
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (isNaN(Number(formData.price)) || formData.price === "") {
-      setNotification({
-        message: "Please enter a valid price.",
-        type: "error",
-      });
-      return;
-    }
-    setLoading(true);
+  if (isNaN(Number(formData.price)) || formData.price === "") {
+    setNotification({
+      message: "Please enter a valid price.",
+      type: "error",
+    });
+    return;
+  }
+
+  setLoading(true);
+
+  try {
     const data = new FormData();
-    data.append("title", formData.title);
-    data.append("category", formData.category);
-    data.append("price", String(formData.price));
-    data.append("description", formData.description);
-    if (formData.file) {
-      data.append("file", formData.file);
+    data.append("file", formData.file as Blob);
+    data.append("upload_preset", UPLOAD_PRESET);
+
+    const res = await fetch(
+      `${CLOUDINARY_URL}/${CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: data,
+      }
+    );
+
+    const uploadedImage = await res.json();
+
+    if (!uploadedImage.secure_url || !uploadedImage.public_id) {
+      throw new Error("Image upload failed");
     }
-    axios
-      .post(`${DATABASE_URL}/api/v1/ads/createAd`, data, {
-        withCredentials: true,
+
+    await axios.post(
+      `${API_URL}/api/v1/ads/createAd`,
+      {
+        title: formData.title,
+        category: formData.category,
+        price: Number(formData.price),
+        description: formData.description,
+        imageLink: uploadedImage.secure_url,
+        publicId: uploadedImage.public_id,
+      },
+      {
         headers: {
           Authorization: localStorage.getItem("token") || "",
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
-      })
-      .then(() => {
-        setNotification({
-          message: "Ad Created Successfully!",
-          type: "success",
-        });
-        setFormData({
-          title: "",
-          category: "",
-          price: "",
-          description: "",
-          file: null,
-        });
-      })
-      .catch((e) => {
-        setNotification({ message: `${e.response.data}`, type: "error" });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+        withCredentials: true,
+      }
+    );
 
+    setNotification({
+      message: "Ad Created Successfully!",
+      type: "success",
+    });
+
+    setFormData({
+      title: "",
+      category: "",
+      price: "",
+      description: "",
+      file: null,
+    });
+
+  } catch (e: any) {
+    setNotification({
+      message: e.response?.data || "Something went wrong",
+      type: "error",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="dark:bg-gray-900 min-h-screen py-10">
       {loading && <Spinner />}

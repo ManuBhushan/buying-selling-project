@@ -81,7 +81,7 @@ export const getUserAllChat = async (req: Request, res: Response) => {
         .values(),
     );
 
-    console.log(uniqueMessages);
+    // console.log(uniqueMessages);
     return res.send(uniqueMessages);
   } catch (error) {}
 };
@@ -126,7 +126,7 @@ export const getAllAdQuery = async (req: Request, res: Response) => {
         }, new Map())
         .values(),
     );
-    console.log(uniqueMessages);
+    // console.log(uniqueMessages);
     return res.send(uniqueMessages);
   } catch (error) {}
 };

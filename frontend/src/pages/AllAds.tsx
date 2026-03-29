@@ -33,14 +33,11 @@ export const AllAds = () => {
   const navigate = useNavigate();
 
   const handleLikeSubmit = async (id: number) => {
-    if (!login) {
+    try{if (!login) {
       navigate("/signin");
       return;
     }
-
-    setActionLoading(id);
-    try {
-      await axios.get(`${DATABASE_URL}/api/v1/like/${id}`, {
+    await axios.get(`${DATABASE_URL}/api/v1/like/${id}`, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
         },
@@ -51,7 +48,7 @@ export const AllAds = () => {
       );
 
       setNotification({ message: "Item added to favorites!", type: "success" });
-    } catch (error) {
+    }catch (error) {
       navigate("/signin");
     } finally {
       setActionLoading(null);
@@ -61,14 +58,13 @@ export const AllAds = () => {
   const handleUnlikeSubmit = async (id: number) => {
     if (!login) {
       navigate("/signin");
-      return;
-    }
+      return;} 
 
-    setActionLoading(id);
+    // setActionLoading(id);
     try {
-      await axios.delete(`${DATABASE_URL}/api/v1/unlike/${id}`, {
+      await axios.delete(`${DATABASE_URL}/api/v1/ads/unlike/${id}`, {
         headers: {
-          Authorization: localStorage.getItem("token") || "",
+          Authorization: localStorage.getItem("token"),
         },
       });
 
@@ -149,7 +145,7 @@ export const AllAds = () => {
             <div className="relative">
               <Link to={`/ad/${ad.id}`}>
                 <img
-                  src={`http://localhost:3000/${ad.imageLink.split("src/")[1]}`}
+                  src={ad.imageLink}  
                   alt={ad.title}
                   className="w-full h-48 object-cover"
                 />

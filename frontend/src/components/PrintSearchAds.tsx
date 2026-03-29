@@ -115,7 +115,7 @@ export const PrintSearchAds = () => {
 
               <Link to={`/ad/${ad.id}`}>
                 <img
-                  src={`http://localhost:3000/${ad.imageLink.split("src/")[1]}`}
+                  src={ad.imageLink}
                   alt="ad"
                   className="min-h-[200px] max-h-[200px] object-contain mx-auto rounded-md my-2"
                 />

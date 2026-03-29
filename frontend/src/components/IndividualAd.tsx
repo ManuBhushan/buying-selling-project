@@ -40,7 +40,7 @@ export const IndividualAd = ({ ad }: { ad: Ads | undefined }) => {
         {/* Image */}
         {ad?.imageLink && (
           <img
-            src={`http://localhost:3000/${ad.imageLink.split("src/")[1]}`}
+            src={ad.imageLink}
             alt="Ad Image"
             className="w-full max-h-[400px] object-contain rounded-md border dark:border-gray-700"
           />

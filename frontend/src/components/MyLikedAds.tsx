@@ -72,7 +72,7 @@ export const MyLikedAds = ({
         >
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             <img
-              src={`http://localhost:3000/${adItem.ad.imageLink.split("src/")[1]}`}
+              src={adItem.ad.imageLink}
               alt="ad"
               className="w-full md:w-72 h-52 object-contain bg-white border rounded-lg dark:bg-gray-900"
             />
@@ -85,7 +85,7 @@ export const MyLikedAds = ({
                 <span className="uppercase">{adItem.ad.category}</span>
               </div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {adItem.ad.title.toUpperCase()}
+                {adItem.ad.title?.toUpperCase()}
               </div>
               <div className="text-gray-700 dark:text-gray-300 mb-4">
                 {adItem.ad.description}

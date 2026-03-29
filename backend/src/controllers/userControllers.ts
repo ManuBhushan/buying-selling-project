@@ -44,7 +44,6 @@ export const SigninUser = async (req: Request, res: Response) => {
         email: body.email,
       },
     });
-
     if (!user) {
       return res.status(409).send("User dont exist");
     }

@@ -26,6 +26,17 @@ const io = new Server(httpserver, {
   },
 });
 
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function testDB() {
+  await prisma.$connect();
+  console.log("✅ DB Connected");
+}
+
+testDB();
+
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   map.set(userId, socket.id);

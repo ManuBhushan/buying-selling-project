@@ -478,16 +478,21 @@ export const getOwnAds = async (req: CustomRequest, res: Response) => {
 export const createAd = async (req: CustomRequest, res: Response) => {
   try {
     const userid = req.userId?.id;
-    const { price, title, description, category, file } = req.body;
-    const data = {
-      userId: userid,
-      price: Number(price),
-      imageLink: req.file?.path,
-      ...(title && { title: title }),
-      ...(description && { description: description }),
-      ...(category && { category: category }),
-    };
-    const ad = await prisma.ads.create({ data });
+    const { price, title, description, category, imageLink, publicId } =
+      req.body;
+
+    const ad = await prisma.ads.create({
+      data: {
+        userId: userid,
+        price: Number(price),
+        imageLink,
+        publicId, 
+        ...(title && { title }),
+        ...(description && { description }),
+        ...(category && { category }),
+      },
+    });
+
     return res.send(ad);
   } catch (error) {
     return res.status(411).send("Error while creating ad");
@@ -527,43 +532,72 @@ export const unlikeRouter = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const deleteParticularAd = async (req: CustomRequest, res: Response) => {
+import cloudinary from "../utils/cloudinary";
+
+export const deleteParticularAd = async (
+  req: CustomRequest,
+  res: Response
+) => {
   const userId = req.userId?.id;
   const id = parseInt(req.params.id);
 
+  if (!id) {
+    return res.status(400).send("Invalid ad id");
+  }
+
   try {
-    const result = await prisma.$transaction(async (prisma) => {
-      await prisma.messages.deleteMany({
-        where: {
-          adId: id,
-        },
-      });
-      await prisma.like.deleteMany({
-        where: {
-          adId: id,
-        },
-      });
-      const deletedAd = await prisma.ads.delete({
+    const ad = await prisma.$transaction(async (tx) => {
+      const foundAd = await tx.ads.findFirst({
         where: {
           id: id,
           userId: userId,
         },
-        include: {
-          user: true,
-        },
       });
 
-      const imageLink = deletedAd.imageLink;
-      fs.unlink(path.join(imageLink), (err) => {
-        if (err) {
-          console.error("Error deleting file:", err);
-          return res.status(500).send("Error deleting file");
-        }
+      if (!foundAd) {
+        throw new Error("Ad not found or unauthorized");
+      }
+
+      await tx.messages.deleteMany({
+        where: { adId: id },
       });
+
+      await tx.like.deleteMany({
+        where: { adId: id },
+      });
+
+      await tx.ads.delete({
+        where: { id: id },
+      });
+
+      return foundAd; 
     });
-    return res.send("Ad and associated likes deleted");
-  } catch (error) {
-    return res.status(411).send("Error while deleting ad and likes");
+
+    if (ad.publicId) {
+      try {
+        console.log("CLOUDINARY:", {
+          cloud: process.env.CLOUDINARY_CLOUD_NAME,
+          key: process.env.CLOUDINARY_API_KEY,
+        });
+
+        const result = await cloudinary.uploader.destroy(ad.publicId);
+        // console.log("Cloudinary delete:", result);
+
+      } catch (err) {
+        console.error("Cloudinary delete failed:", err);
+      }
+    }
+
+    return res.send("Ad deleted successfully");
+
+  } catch (error: any) {
+    console.error("Delete error:", error.message);
+
+    if (error.message === "Ad not found or unauthorized") {
+      return res.status(403).send(error.message);
+    }
+
+    return res.status(500).send("Error while deleting ad");
   }
 };
 

@@ -93,13 +93,14 @@ export const MyIndividualAds = ({
             Created at: {new Date(ad.createdAt).toLocaleString()}
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {ad.title.toUpperCase()}
+            {ad.title?.toUpperCase()}
           </div>
           <div className="mb-3 text-gray-700 dark:text-gray-300">
             <strong>Category:</strong> {ad.category}
           </div>
           <img
-            src={`http://localhost:3000/${ad.imageLink.split("src/")[1]}`}
+            // src={`http://localhost:3000/${ad.imageLink.split("src/")[1]}`}
+            src={ad.imageLink}
             alt="ad"
             className="w-full h-64 object-contain rounded-lg border border-gray-200 dark:border-gray-700 mb-4 bg-white"
           />

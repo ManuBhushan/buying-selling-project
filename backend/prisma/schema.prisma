@@ -35,6 +35,7 @@ model Ads{
   title       String?
   description String?
   imageLink   String
+  publicId    String
   userId      Int
   user        User @relation(fields: [userId] , references: [id])
   like       Like[]
