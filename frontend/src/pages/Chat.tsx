@@ -2,7 +2,7 @@ import { useRecoilValue } from "recoil";
 import { validUser } from "../hooks/CustomAds";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { Link } from "react-router-dom";
 import { IoMdChatboxes } from "react-icons/io";
 import { Spinner } from "../components/Spinner";

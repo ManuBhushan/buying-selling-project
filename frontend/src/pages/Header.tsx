@@ -1,7 +1,7 @@
 import axios from "axios";
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { category, customAds, validUser } from "../hooks/CustomAds";
 import { UserDropdown } from "../components/UserDropdown";

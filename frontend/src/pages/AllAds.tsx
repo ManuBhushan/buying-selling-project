@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { Link, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { validUser } from "../hooks/CustomAds";

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { atom } from "recoil";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { recoilPersist } from "recoil-persist";
 
 interface Ads {

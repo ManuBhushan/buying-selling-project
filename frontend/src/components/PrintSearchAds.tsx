@@ -5,7 +5,7 @@ import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import { NotificationModel } from "./NotificationModel";
 import { useState } from "react";
 import axios from "axios";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { Spinner } from "./Spinner";
 
 export const PrintSearchAds = () => {

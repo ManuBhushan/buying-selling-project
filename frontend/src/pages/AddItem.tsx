@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useState } from "react";
-import { DATABASE_URL } from "../config";
 import { NotificationModel } from "../components/NotificationModel";
 import { Spinner } from "../components/Spinner";
 
@@ -44,9 +43,14 @@ export const AddItem = () => {
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const API_URL = import.meta.env.VITE_API_BASE_URL;
-const CLOUDINARY_URL = import.meta.env.CLOUDINARY_URL;
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
+
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
+
+  console.log("CLOUDINARY_URL:", CLOUDINARY_URL);
+  console.log("CLOUD_NAME:", CLOUD_NAME);
+  console.log("UPLOAD_PRESET:", UPLOAD_PRESET);
 
   if (isNaN(Number(formData.price)) || formData.price === "") {
     setNotification({
@@ -63,20 +67,26 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     data.append("file", formData.file as Blob);
     data.append("upload_preset", UPLOAD_PRESET);
 
-    const res = await fetch(
+    console.log("z");
+
+    // ✅ AXIOS instead of fetch
+    const cloudinaryRes = await axios.post(
       `${CLOUDINARY_URL}/${CLOUD_NAME}/image/upload`,
-      {
-        method: "POST",
-        body: data,
-      }
+      data
     );
 
-    const uploadedImage = await res.json();
+    console.log("zb");
+    console.log(cloudinaryRes.data);
+
+    const uploadedImage = cloudinaryRes.data;
 
     if (!uploadedImage.secure_url || !uploadedImage.public_id) {
       throw new Error("Image upload failed");
     }
 
+    console.log("zc");
+
+    // ✅ Your API call (unchanged)
     await axios.post(
       `${API_URL}/api/v1/ads/createAd`,
       {
@@ -110,8 +120,18 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     });
 
   } catch (e: any) {
+    console.log("a");
+    console.log(e);
+
+    // ✅ Better error handling
+    const errorMessage =
+      e?.response?.data?.error?.message || // Cloudinary error
+      e?.response?.data ||                // your backend error
+      e.message ||                        // generic error
+      "Something went wrong";
+
     setNotification({
-      message: e.response?.data || "Something went wrong",
+      message: errorMessage,
       type: "error",
     });
   } finally {

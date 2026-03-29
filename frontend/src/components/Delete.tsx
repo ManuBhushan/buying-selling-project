@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { NotificationModel } from "../components/NotificationModel";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";

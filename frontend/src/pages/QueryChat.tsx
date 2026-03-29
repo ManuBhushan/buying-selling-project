@@ -4,7 +4,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { IoMdChatboxes } from "react-icons/io";
 import { validUser } from "../hooks/CustomAds";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { Spinner } from "../components/Spinner";
 
 interface Ad {

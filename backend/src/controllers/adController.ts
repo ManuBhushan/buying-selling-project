@@ -486,7 +486,7 @@ export const createAd = async (req: CustomRequest, res: Response) => {
         userId: userid,
         price: Number(price),
         imageLink,
-        publicId, 
+        publicId,
         ...(title && { title }),
         ...(description && { description }),
         ...(category && { category }),
@@ -534,10 +534,7 @@ export const unlikeRouter = async (req: CustomRequest, res: Response) => {
 
 import cloudinary from "../utils/cloudinary";
 
-export const deleteParticularAd = async (
-  req: CustomRequest,
-  res: Response
-) => {
+export const deleteParticularAd = async (req: CustomRequest, res: Response) => {
   const userId = req.userId?.id;
   const id = parseInt(req.params.id);
 
@@ -570,7 +567,7 @@ export const deleteParticularAd = async (
         where: { id: id },
       });
 
-      return foundAd; 
+      return foundAd;
     });
 
     if (ad.publicId) {
@@ -582,14 +579,12 @@ export const deleteParticularAd = async (
 
         const result = await cloudinary.uploader.destroy(ad.publicId);
         // console.log("Cloudinary delete:", result);
-
       } catch (err) {
         console.error("Cloudinary delete failed:", err);
       }
     }
 
     return res.send("Ad deleted successfully");
-
   } catch (error: any) {
     console.error("Delete error:", error.message);
 

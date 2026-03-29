@@ -31,7 +31,7 @@ adsRouter.get("/search/withlike", getSearchedAdsWithLogin); //  URL=>{ ../search
 adsRouter.get("/bulk/withlike", getAllAdsWithogin);
 adsRouter.get("/", getUserInfo);
 adsRouter.get("/own", getOwnAds);
-adsRouter.post("/createAd",  createAd);
+adsRouter.post("/createAd", createAd);
 adsRouter.get("/myads", myAds);
 adsRouter.delete("/delete/:id", deleteParticularAd);
 adsRouter.get("/sold", updateAdSoldStatus);

@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { useSetRecoilState } from "recoil";
 import { validUser } from "../hooks/CustomAds";
 

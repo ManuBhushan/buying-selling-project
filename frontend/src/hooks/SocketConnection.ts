@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Create a function to initialize the socket with user info
 export const SocketConnection = (user: {

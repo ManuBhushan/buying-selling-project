@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import axios from "axios";
 import { NotificationModel } from "./NotificationModel";
 import { Spinner } from "./Spinner";

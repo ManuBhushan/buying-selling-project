@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { IndividualAd } from "../components/IndividualAd";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { DATABASE_URL } from "../config";
+const DATABASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { AlertTriangle } from "lucide-react";
 import { Spinner } from "../components/Spinner";
 
